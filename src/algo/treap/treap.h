@@ -29,6 +29,7 @@ std::pair<Node*, Node*> split(Node* node, const typename Node::KeyType& key) noe
   if (node->Key() == key) {
     auto* r = node->right;
     node->right = nullptr; 
+    node->Update();
     return { node, r };
   } else if (node->Key() > key) {
     auto [l, r] = split(node->left, key);
