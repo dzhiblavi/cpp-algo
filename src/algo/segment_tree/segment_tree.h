@@ -21,7 +21,6 @@ struct multivector_holder<T, 1> { using type = std::vector<T>; };
 template <typename T, size_t NDims>
 using multivector = typename multivector_holder<T, NDims>::type;
 
-
 template <typename T, size_t NDims, size_t Dim>
 void fill_sizes(const multivector<T, Dim + 1>& a, size_t (&sizes)[NDims]) {
   sizes[NDims - Dim - 1] = a.size();

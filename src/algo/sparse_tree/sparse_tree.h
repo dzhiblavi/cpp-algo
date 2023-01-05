@@ -58,7 +58,7 @@ class sparse_tree {
     size_t offsets[1ULL << NDims];
     std::fill(idxs, idxs + 2 * NDims, 0);
     std::fill(offsets, offsets + (1ULL << NDims), 0);
-    build_q<0>(idxs, offsets, 0);
+    build_q<0>(offsets, 0);
   }
 
   T get(size_t (&ql)[NDims], size_t (&qr)[NDims]) {
@@ -112,16 +112,14 @@ class sparse_tree {
   }
 
   template <size_t I>
-  void build_q(size_t (&idxs)[2 * NDims], const size_t (&offsets)[1ULL << NDims], size_t offset) {
+  void build_q(const size_t (&offsets)[1ULL << NDims], size_t offset) {
     static constexpr size_t num_offsets = 1ULL << NDims;
     static constexpr size_t step = 1ULL << I;
     size_t s_offsets[num_offsets];
 
     for (size_t k = 0; k < dims[I + NDims]; ++k) {
-      idxs[I + NDims] = k;
       for (size_t i = 0; i + (1ULL << k) <= dims[I]; ++i) {
         std::copy(offsets, offsets + num_offsets, s_offsets);
-        idxs[I] = i;
 
         if (k == 0) {
           for (size_t z = 0; z < num_offsets; ++z) {
@@ -145,7 +143,7 @@ class sparse_tree {
               s_offsets, s_offsets + num_offsets, op.neutral(),
               op, [this] (size_t offset) { return s[offset]; });
         } else {
-          build_q<I + 1>(idxs, s_offsets, new_offset);
+          build_q<I + 1>(s_offsets, new_offset);
         }
       }
     }
