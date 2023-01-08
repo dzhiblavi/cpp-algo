@@ -1,6 +1,7 @@
 cc_library(
     name = "tests_lib",
     hdrs = [
+        "utils/benchmark.h",
         "utils/compare_range_engines.h",
         "utils/range_query.h",
         "utils/generate.h",
@@ -9,7 +10,8 @@ cc_library(
         "utils/generate.cpp",
     ],
     deps = [
-
+        "@com_google_googletest//:gtest",
+        "@com_google_benchmark//:benchmark",
     ],
 )
 
@@ -17,18 +19,19 @@ cc_test(
     name = "unit_tests",
     srcs = [
         "aho_corasick_test.cpp",
+        "fenwick_tree_test.cpp",
         "segment_tree_test.cpp",
-        "segment_vs_sparse_tree_test.cpp",
+        "segment_vs_other_tree_test.cpp",
         "sparse_tree_test.cpp",
         "treap_test.cpp",
     ],
     deps = [
         ":tests_lib",
         "//src/algo:aho_corasick",
+        "//src/algo:fenwick_tree",
         "//src/algo:segment_tree",
         "//src/algo:sparse_tree",
         "//src/algo:treap",
-        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -36,16 +39,17 @@ cc_test(
 cc_test(
     name = "benchmarks",
     srcs = [
+        "fenwick_tree_benchmark.cpp",
         "sparse_tree_benchmark.cpp",
         "segment_tree_benchmark.cpp",
     ],
     deps = [
         ":tests_lib",
         "//src/algo:aho_corasick",
+        "//src/algo:fenwick_tree",
         "//src/algo:segment_tree",
         "//src/algo:sparse_tree",
         "//src/algo:treap",
-        "@com_google_benchmark//:benchmark",
         "@com_google_benchmark//:benchmark_main",
     ],
 )

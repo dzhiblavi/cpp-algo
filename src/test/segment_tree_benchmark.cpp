@@ -1,48 +1,18 @@
-#include <benchmark/benchmark.h>
-
 #include "algo/segment_tree/segment_tree.h"
-#include "utils/generate.h"
+#include "utils/benchmark.h"
 
 namespace algo::sgt {
 
 static void BM_segment_tree_build(benchmark::State& state) {
-  size_t dims[1] = { size_t(state.range(0)) };
-  auto as = test::generate(-10000, +10000, dims);
-  for (auto _ : state) {
-    segment_tree<int, test::min_op<int>, 1> sgt(as);
-  }
-  state.SetComplexityN(state.range(0));
+  test::rq_build_bench<segment_tree<int, test::min_op<int>, 1>>(state);
 }
 
 static void BM_segment_tree_query(benchmark::State& state) {
-  size_t dims[1] = { size_t(state.range(0)) };
-  auto as = test::generate(-10000, +10000, dims);
-  segment_tree<int, test::min_op<int>, 1> sgt(as);
-  size_t ql[1], qr[1];
-  for (auto _ : state) {
-    state.PauseTiming();
-    test::random_range(ql, qr, dims);
-    state.ResumeTiming();
-
-    benchmark::DoNotOptimize(sgt.get(ql, qr));
-  }
-  state.SetComplexityN(state.range(0));
+  test::rq_query_bench<segment_tree<int, test::min_op<int>, 1>>(state);
 }
 
 static void BM_segment_tree_update(benchmark::State& state) {
-  size_t dims[1] = { size_t(state.range(0)) };
-  auto as = test::generate(-10000, +10000, dims);
-  segment_tree<int, test::min_op<int>, 1> sgt(as);
-  size_t idxs[1];
-  for (auto _ : state) {
-    state.PauseTiming();
-    test::random_index(idxs, dims);
-    int value = std::uniform_int_distribution<int>(-10000, 10000)(test::generator());
-    state.ResumeTiming();
-
-    sgt.set(idxs, value);
-  }
-  state.SetComplexityN(state.range(0));
+  test::rq_update_bench<segment_tree<int, test::min_op<int>, 1>>(state);
 }
 
 BENCHMARK(BM_segment_tree_build)

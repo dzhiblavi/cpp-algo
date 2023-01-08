@@ -10,7 +10,7 @@ namespace algo::test {
 
 template <typename EngineA, typename EngineB, size_t NDims>
 void CompareRangeEnginesImmutable(const size_t (&dims)[NDims], size_t samples) {
-  auto as = test::generate<int, NDims>(-10000, 10000, dims);
+  auto as = test::generate<int, NDims>(-100, 100, dims);
   EngineA engine_a(as);
   EngineB engine_b(as);
   size_t ql[NDims], qr[NDims];
@@ -24,7 +24,7 @@ void CompareRangeEnginesImmutable(const size_t (&dims)[NDims], size_t samples) {
 
 template <typename EngineA, typename EngineB, size_t NDims>
 void CompareRangeEnginesMutable(const size_t (&dims)[NDims], size_t samples) {
-  auto as = test::generate<int, NDims>(-10000, 10000, dims);
+  auto as = test::generate<int, NDims>(-100, 100, dims);
   EngineA engine_a(as);
   EngineB engine_b(as);
   size_t ql[NDims], qr[NDims], idxs[NDims];
@@ -34,7 +34,7 @@ void CompareRangeEnginesMutable(const size_t (&dims)[NDims], size_t samples) {
       int query_engine_b = engine_b.get(ql, qr);
       ASSERT_EQ(query_engine_a, query_engine_b);
 
-      int value = std::uniform_int_distribution<int>(-10000, 10000)(generator());
+      int value = std::uniform_int_distribution<int>(-100, 100)(generator());
       test::random_index(idxs, dims);
       engine_a.set(idxs, value);
       engine_b.set(idxs, value);

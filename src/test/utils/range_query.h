@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <vector>
 #include <limits>
+#include <functional>
 
 namespace algo::test {
 
@@ -89,8 +90,7 @@ struct max_op {
 };
 
 template <typename T>
-struct sum_op {
-  T operator()(const T& a, const T& b) const noexcept { return a + b; }
+struct sum_op : public std::plus<T> {
   T neutral() const noexcept { return T(0); }
 };
 

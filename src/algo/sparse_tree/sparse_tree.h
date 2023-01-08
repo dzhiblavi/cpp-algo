@@ -39,7 +39,7 @@ const T& multi_get(const multivector<T, NDims - Dim>& a, size_t (&idxs)[NDims]) 
   }
 }
 
-template <typename T, typename Op, size_t NDims>
+template <typename T, typename Op, size_t NDims = 1>
 class sparse_tree {
  public:
   explicit sparse_tree(const multivector<T, NDims>& a) {

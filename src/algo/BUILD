@@ -39,3 +39,12 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
+cc_library(
+    name = "fenwick_tree",
+    hdrs = [
+        "fenwick_tree/fenwick_tree.h",
+    ],
+    include_prefix = "algo",
+    visibility = ["//visibility:public"],
+)
+
