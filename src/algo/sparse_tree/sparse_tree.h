@@ -61,7 +61,7 @@ class sparse_tree {
     build_q<0>(offsets, 0);
   }
 
-  T get(size_t (&ql)[NDims], size_t (&qr)[NDims]) {
+  T query(size_t (&ql)[NDims], size_t (&qr)[NDims]) {
     size_t offsets[1ULL << NDims];
     std::fill(offsets, offsets + (1ULL << NDims), 0);
     return query<0>(ql, qr, offsets);

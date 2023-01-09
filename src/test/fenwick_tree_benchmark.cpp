@@ -31,3 +31,4 @@ BENCHMARK(BM_fenwick_tree_update)
   ->Complexity();
 
 }  // namespace algo::spt
+

@@ -76,15 +76,15 @@ class fenwick_tree {
     init<0>(a, d);
   }
 
-  void set(const size_t (&cs)[NDims], const T& value) { set<0>(cs, 0, value); }
+  void update(const size_t (&cs)[NDims], const T& value) { update<0>(cs, 0, value); }
 
-  T get(const size_t (&qr)[NDims]) {
+  T query(const size_t (&qr)[NDims]) {
     T result = op.neutral();
     query<0>(result, qr, 0);
     return result;
   }
 
-  T get(const size_t (&ql)[NDims], const size_t (&qr)[NDims]) {
+  T query(const size_t (&ql)[NDims], const size_t (&qr)[NDims]) {
     size_t q[NDims];
     T result = op.neutral();
     query<0, 1>(result, q, ql, qr);
@@ -107,14 +107,14 @@ class fenwick_tree {
   void query(T& result, size_t (&q)[NDims], const size_t (&ql)[NDims], const size_t (&qr)[NDims]) {
     q[I] = ql[I] - 1;
     if constexpr (I == NDims - 1) {
-      T x = get(q);
+      T x = query(q);
       result = op(result, Sign == -1 ? x : op.inv(x));
     } else {
       query<I + 1, -Sign>(result, q, ql, qr);
     }
     q[I] = qr[I];
     if constexpr (I == NDims - 1) {
-      T x = get(q);
+      T x = query(q);
       result = op(result, Sign == 1 ? x : op.inv(x));
     } else {
       query<I + 1, Sign>(result, q, ql, qr);
@@ -122,12 +122,12 @@ class fenwick_tree {
   }
 
   template <size_t I>
-  void set(const size_t (&cs)[NDims], size_t index, const T& value) {
+  void update(const size_t (&cs)[NDims], size_t index, const T& value) {
     for (int64_t i = cs[I]; i < dims[I]; i = (i | (i + 1))) {
       if constexpr (I == NDims - 1) {
         op.update(t[index + i], value);
       } else {
-        set<I + 1>(cs, index + i * strides[I], value);
+        update<I + 1>(cs, index + i * strides[I], value);
       }
     }
   }
@@ -137,7 +137,7 @@ class fenwick_tree {
     for (size_t i = 0; i < dims[I]; ++i) {
       idxs[I] = i;
       if constexpr (I == NDims - 1) {
-        set(idxs, multi_get<T>(a, idxs)); 
+        update(idxs, multi_get<T>(a, idxs)); 
       } else {
         init<I + 1>(a, idxs);
       }

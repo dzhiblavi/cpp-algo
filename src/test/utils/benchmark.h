@@ -25,7 +25,7 @@ void rq_query_bench(benchmark::State& state) {
     test::random_range(ql, qr, dims);
     state.ResumeTiming();
 
-    benchmark::DoNotOptimize(e.get(ql, qr));
+    benchmark::DoNotOptimize(e.query(ql, qr));
   }
   state.SetComplexityN(state.range(0));
 }
@@ -42,7 +42,7 @@ void rq_update_bench(benchmark::State& state) {
     int value = std::uniform_int_distribution<int>(-100, 100)(test::generator());
     state.ResumeTiming();
 
-    e.set(idxs, value);
+    e.update(idxs, value);
   }
   state.SetComplexityN(state.range(0));
 }

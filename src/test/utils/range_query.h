@@ -50,18 +50,37 @@ class naive_range_query {
  public:
   explicit naive_range_query(multivector<T, NDims>& x) : a(x) {}
 
-  T get(size_t (&ql)[NDims], size_t (&qr)[NDims]) {
+  auto query(size_t (&ql)[NDims], size_t (&qr)[NDims]) {
     size_t idxs[NDims];
-    std::fill(idxs, idxs + NDims, 0);
     return query<0>(ql, qr, idxs);
   }
 
-  void set(size_t (&cs)[NDims], const T& value) { multi_get<T>(a, cs) = value; }
+  void update(size_t (&cs)[NDims], const T& value) { multi_get<T>(a, cs) = value; }
+
+  void update_range(size_t (&ul)[NDims], size_t (&ur)[NDims], const T& value) {
+    size_t idxs[NDims];
+    update_range<0>(ul, ur, idxs, value);
+  }
 
  private:
   template <size_t I>
-  T query(size_t (&ql)[NDims], size_t (&qr)[NDims], size_t (&idxs)[NDims]) {
-    T result = op.neutral();
+  void update_range(
+      size_t (&ul)[NDims], size_t (&ur)[NDims],
+      size_t (&idxs)[NDims], const T& value)
+  {
+    for (size_t i = ul[I]; i <= ur[I]; ++i) {
+      idxs[I] = i;
+      if constexpr (I == NDims - 1) {
+        multi_get<T>(a, idxs) += value;
+      } else {
+        update_range<I + 1>(ul, ur, idxs, value);
+      }
+    }
+  }
+
+  template <size_t I>
+  auto query(size_t (&ql)[NDims], size_t (&qr)[NDims], size_t (&idxs)[NDims]) {
+    auto result = op.neutral();
     for (size_t i = ql[I]; i <= qr[I]; ++i) {
       idxs[I] = i;
       if constexpr (I == NDims - 1) {
@@ -81,17 +100,40 @@ template <typename T>
 struct min_op {
   T operator()(const T& a, const T& b) const noexcept { return std::min(a, b); }
   T neutral() const noexcept { return std::numeric_limits<T>::max(); }
+  T init() const noexcept { return neutral(); }
 };
 
 template <typename T>
 struct max_op {
   T operator()(const T& a, const T& b) const noexcept { return std::max(a, b); }
   T neutral() const noexcept { return std::numeric_limits<T>::min(); }
+  T init() const noexcept { return neutral(); }
 };
 
 template <typename T>
 struct sum_op : public std::plus<T> {
   T neutral() const noexcept { return T(0); }
+  T init() const noexcept { return neutral(); }
+};
+
+template <typename T>
+struct min_and_count_op {
+  using value = std::pair<T, int>;
+
+  value neutral() const noexcept { return {std::numeric_limits<T>::max(), 1}; }
+  value init() const noexcept { return neutral(); }
+
+  value operator()(const value& a, const value& b) const noexcept {
+    if (a.first < b.first) {
+      return a;
+    } else if (b.first < a.first) {
+      return b;
+    } else {
+      return { a.first, a.second + b.second };
+    }
+  }
+
+  value operator()(const value& a, const T& b) const noexcept { return (*this)(a, { b, 1 }); }
 };
 
 }  // namespace algo::test

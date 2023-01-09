@@ -14,7 +14,7 @@ namespace algo {
 template <size_t NDims>
 void TestCompareSGTvsSPT(const size_t (&dims)[NDims]) {
   test::CompareRangeEnginesImmutable<
-    sgt::segment_tree<int, test::min_op<int>, NDims>,
+    sgt::simple_segment_tree<int, test::min_op<int>, NDims>,
     spt::sparse_tree<int, test::min_op<int>, NDims>
   >(dims, 1000000);
 }
@@ -22,7 +22,7 @@ void TestCompareSGTvsSPT(const size_t (&dims)[NDims]) {
 template <size_t NDims>
 void TestCompareSGTvsFWT(const size_t (&dims)[NDims]) {
   test::CompareRangeEnginesImmutable<
-    sgt::segment_tree<int, test::sum_op<int>, NDims>,
+    sgt::simple_segment_tree<int, test::sum_op<int>, NDims>,
     fwt::fenwick_tree<int, fwt::fenwick_sum_op<int>, NDims>
   >(dims, 1000000);
 }

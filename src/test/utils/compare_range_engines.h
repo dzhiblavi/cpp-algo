@@ -8,36 +8,61 @@
 
 namespace algo::test {
 
-template <typename EngineA, typename EngineB, size_t NDims>
+template <
+  typename EngineA, typename EngineB,
+  typename Element = int, typename Output = int, size_t NDims = 1>
 void CompareRangeEnginesImmutable(const size_t (&dims)[NDims], size_t samples) {
-  auto as = test::generate<int, NDims>(-100, 100, dims);
+  auto as = test::generate<Element, NDims>(-100, 100, dims);
   EngineA engine_a(as);
   EngineB engine_b(as);
   size_t ql[NDims], qr[NDims];
   while (samples--) {
       test::random_range(ql, qr, dims);
-      int query_engine_a = engine_a.get(ql, qr);
-      int query_engine_b = engine_b.get(ql, qr);
+      auto query_engine_a = Output(engine_a.query(ql, qr));
+      auto query_engine_b = Output(engine_b.query(ql, qr));
       ASSERT_EQ(query_engine_a, query_engine_b);
   }
 }
 
-template <typename EngineA, typename EngineB, size_t NDims>
+template <
+  typename EngineA, typename EngineB,
+  typename Element = int, typename Output = int, size_t NDims = 1>
 void CompareRangeEnginesMutable(const size_t (&dims)[NDims], size_t samples) {
-  auto as = test::generate<int, NDims>(-100, 100, dims);
+  auto as = test::generate<Element, NDims>(-100, 100, dims);
   EngineA engine_a(as);
   EngineB engine_b(as);
   size_t ql[NDims], qr[NDims], idxs[NDims];
   while (samples--) {
       test::random_range(ql, qr, dims);
-      int query_engine_a = engine_a.get(ql, qr);
-      int query_engine_b = engine_b.get(ql, qr);
+      auto query_engine_a = Output(engine_a.query(ql, qr));
+      auto query_engine_b = Output(engine_b.query(ql, qr));
       ASSERT_EQ(query_engine_a, query_engine_b);
 
-      int value = std::uniform_int_distribution<int>(-100, 100)(generator());
+      auto value = std::uniform_int_distribution<Element>(-100, 100)(generator());
       test::random_index(idxs, dims);
-      engine_a.set(idxs, value);
-      engine_b.set(idxs, value);
+      engine_a.update(idxs, value);
+      engine_b.update(idxs, value);
+  }
+}
+
+template <
+  typename EngineA, typename EngineB,
+  typename Element = int, typename Output = int, size_t NDims = 1>
+void CompareRangeEnginesMutableRange(const size_t (&dims)[NDims], size_t samples) {
+  auto as = test::generate<Element, NDims>(-10, 10, dims);
+  EngineA engine_a(as);
+  EngineB engine_b(as);
+  size_t ql[NDims], qr[NDims];
+  while (samples--) {
+      test::random_range(ql, qr, dims);
+      auto query_engine_a = Output(engine_a.query(ql, qr));
+      auto query_engine_b = Output(engine_b.query(ql, qr));
+      ASSERT_EQ(query_engine_a, query_engine_b);
+
+      test::random_range(ql, qr, dims);
+      auto value = std::uniform_int_distribution<Element>(-10, 10)(generator());
+      engine_a.update_range(ql, qr, value);
+      engine_b.update_range(ql, qr, value);
   }
 }
 

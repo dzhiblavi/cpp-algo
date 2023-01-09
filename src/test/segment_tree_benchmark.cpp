@@ -4,15 +4,15 @@
 namespace algo::sgt {
 
 static void BM_segment_tree_build(benchmark::State& state) {
-  test::rq_build_bench<segment_tree<int, test::min_op<int>, 1>>(state);
+  test::rq_build_bench<simple_segment_tree<int, test::min_op<int>, 1>>(state);
 }
 
 static void BM_segment_tree_query(benchmark::State& state) {
-  test::rq_query_bench<segment_tree<int, test::min_op<int>, 1>>(state);
+  test::rq_query_bench<simple_segment_tree<int, test::min_op<int>, 1>>(state);
 }
 
 static void BM_segment_tree_update(benchmark::State& state) {
-  test::rq_update_bench<segment_tree<int, test::min_op<int>, 1>>(state);
+  test::rq_update_bench<simple_segment_tree<int, test::min_op<int>, 1>>(state);
 }
 
 BENCHMARK(BM_segment_tree_build)
