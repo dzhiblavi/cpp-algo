@@ -12,17 +12,16 @@ struct node_base {
   using CharType = CharT;
 
   static constexpr size_t NumChars =
-    std::numeric_limits<CharT>::max() - std::numeric_limits<CharT>::min() + 1;
+      std::numeric_limits<CharT>::max() - std::numeric_limits<CharT>::min() + 1;
 
-  NodePtr children[NumChars] = { nullptr };
-  NodePtr jump[NumChars] = { nullptr };
+  NodePtr children[NumChars] = {nullptr};
+  NodePtr jump[NumChars] = {nullptr};
 
   NodePtr suff_link = nullptr;
   NodePtr parent = nullptr;
 
   CharT parent_char{};
 };
-
 
 template <typename Node>
 class AhoCorasick {
@@ -32,7 +31,9 @@ class AhoCorasick {
 
   AhoCorasick() noexcept = default;
 
-  ~AhoCorasick() noexcept { destroy(&root_); }
+  ~AhoCorasick() noexcept {
+    destroy(&root_);
+  }
 
   template <typename It>
   void add_string(It begin, It end) {
@@ -47,7 +48,7 @@ class AhoCorasick {
         u->parent_char = *begin;
         v->children[index] = u;
       }
-      
+
       v = v->children[index];
     }
   }
@@ -93,4 +94,3 @@ class AhoCorasick {
 }  // namespace algo::aho
 
 #endif  // ALGO_AHO_CORASICK_H
-

@@ -1,12 +1,29 @@
 cc_library(
-    name = "treap",
+    name = "utility",
     hdrs = [
-        "treap/adapter.h",
-        "treap/treap.h",
-        "treap/node.h",
+        "utility/nd_container.h",
+        "utility/nd_helpers.h",
     ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "common",
+    hdrs = [
+        "common/types.h",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "treap",
     srcs = [
         "treap/node.cpp",
+    ],
+    hdrs = [
+        "treap/adapter.h",
+        "treap/node.h",
+        "treap/treap.h",
     ],
     include_prefix = "algo",
     visibility = ["//visibility:public"],
@@ -46,5 +63,8 @@ cc_library(
     ],
     include_prefix = "algo",
     visibility = ["//visibility:public"],
+    deps = [
+        ":common",
+        ":utility",
+    ],
 )
-

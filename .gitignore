@@ -36,3 +36,4 @@ bazel-*
 *.exe
 *.out
 *.app
+.vscode
