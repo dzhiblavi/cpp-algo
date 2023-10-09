@@ -19,9 +19,7 @@ namespace detail {
 
 template <size_t NDims>
 struct QueryHandle {
-  types::Index<NDims>& getIndex() noexcept {
-    return index_;
-  }
+  types::Index<NDims>& getIndex() noexcept { return index_; }
 
  private:
   types::Index<NDims> index_;
@@ -33,9 +31,7 @@ struct QueryHandle {
 
 template <size_t NDims>
 struct RangeQueryHandle {
-  types::Range<NDims>& getRange() noexcept {
-    return range_;
-  }
+  types::Range<NDims>& getRange() noexcept { return range_; }
 
  private:
   types::Range<NDims> range_;
@@ -68,13 +64,9 @@ class SparseTree {
     build_q<0>(offsets, 0);
   }
 
-  [[nodiscard]] QueryHandle getQueryHandle() const noexcept {
-    return {};
-  }
+  [[nodiscard]] QueryHandle getQueryHandle() const noexcept { return {}; }
 
-  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept {
-    return {};
-  }
+  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept { return {}; }
 
   T query(RangeQueryHandle& handle) {
     std::fill(handle.offsets_.begin(), handle.offsets_.end(), 0);
@@ -130,21 +122,21 @@ class SparseTree {
 
   template <size_t I>
   void build_q(const types::Index<1ULL << NDims>& offsets, size_t offset) {
-    static constexpr size_t num_offsets = 1ULL << NDims;
+    static constexpr size_t kNumOffsets = 1ULL << NDims;
     static constexpr size_t step = 1ULL << I;
-    types::Index<num_offsets> s_offsets;
+    types::Index<kNumOffsets> s_offsets;
 
     for (size_t k = 0; k < dims_[I + NDims]; ++k) {
       for (size_t i = 0; i + (1ULL << k) <= dims_[I]; ++i) {
-        std::copy(offsets.begin(), offsets.begin() + num_offsets, s_offsets.begin());
+        std::copy(offsets.begin(), offsets.end(), s_offsets.begin());
 
         if (k == 0) {
-          for (size_t z = 0; z < num_offsets; ++z) {
-            s_offsets[z] += strides_[I] * i;
+          for (auto& offset : s_offsets) {
+            offset += strides_[I] * i;
           }
         } else {
           size_t j = 0;
-          while (j < num_offsets) {
+          while (j < kNumOffsets) {
             for (size_t z = 0; z < step; ++z, ++j) {
               s_offsets[j] += strides_[I] * i + strides_[I + NDims] * (k - 1);
             }
@@ -157,7 +149,7 @@ class SparseTree {
         size_t new_offset = offset + i * strides_[I] + k * strides_[I + NDims];
         if constexpr (I == NDims - 1) {
           storage_[new_offset] = std::transform_reduce(
-              s_offsets.begin(), s_offsets.begin() + num_offsets, op_.neutral(), op_,
+              s_offsets.begin(), s_offsets.end(), op_.neutral(), op_,
               [this](size_t offset) { return storage_[offset]; });
         } else {
           build_q<I + 1>(s_offsets, new_offset);

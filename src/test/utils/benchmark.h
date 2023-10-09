@@ -3,14 +3,14 @@
 
 #include <benchmark/benchmark.h>
 
-namespace algo::test {
+namespace test::rq {
 
 template <typename Engine>
 void rqBuildBenchmark(benchmark::State& state) {
   std::array<size_t, 1> dims = {size_t(state.range(0))};
   auto as = test::generate(-100, +100, dims);
   for (auto _ : state) {
-    Engine e{utility::asView(as)};
+    Engine e{algo::utility::asView(as)};
   }
   state.SetComplexityN(state.range(0));
 }
@@ -19,7 +19,7 @@ template <typename Engine>
 void rqQueryBenchmark(benchmark::State& state) {
   std::array<size_t, 1> dims = {size_t(state.range(0))};
   auto as = test::generate(-100, +100, dims);
-  Engine e{utility::asView(as)};
+  Engine e{algo::utility::asView(as)};
   auto query_handle = e.getRangeQueryHandle();
 
   for (auto _ : state) {
@@ -36,7 +36,7 @@ template <typename Engine>
 void rqUpdateBenchmark(benchmark::State& state) {
   std::array<size_t, 1> dims = {size_t(state.range(0))};
   auto as = test::generate(-100, +100, dims);
-  Engine e{utility::asView(as)};
+  Engine e{algo::utility::asView(as)};
   auto query_handle = e.getQueryHandle();
 
   for (auto _ : state) {
@@ -50,4 +50,4 @@ void rqUpdateBenchmark(benchmark::State& state) {
   state.SetComplexityN(state.range(0));
 }
 
-}  // namespace algo::test
+}  // namespace test::rq

@@ -7,19 +7,17 @@
 #include <cstddef>
 #include <gtest/gtest.h>
 
-namespace algo::test {
+namespace test::rq {
 
-template <
-    typename EngineA, typename EngineB, typename Element = int, typename Output = int,
-    size_t NDims = 1>
+template <typename EngineA, typename EngineB, typename Element = int, typename Output = int, size_t NDims = 1>
 void compareRangeEnginesImmutable(const std::array<size_t, NDims>& dims, size_t samples) {
   auto as = test::generate<Element, NDims>(-100, 100, dims);
-  EngineA engine_a{utility::asView(as)};
-  EngineB engine_b{utility::asView(as)};
+  EngineA engine_a{algo::utility::asView(as)};
+  EngineB engine_b{algo::utility::asView(as)};
 
   auto a_query_handle = engine_a.getRangeQueryHandle();
   auto b_query_handle = engine_b.getRangeQueryHandle();
-  types::Index<NDims> ql, qr;
+  algo::types::Index<NDims> ql, qr;
 
   while (samples--) {
     test::randomRange(ql, qr, dims);
@@ -32,17 +30,15 @@ void compareRangeEnginesImmutable(const std::array<size_t, NDims>& dims, size_t 
   }
 }
 
-template <
-    typename EngineA, typename EngineB, typename Element = int, typename Output = int,
-    size_t NDims = 1>
+template <typename EngineA, typename EngineB, typename Element = int, typename Output = int, size_t NDims = 1>
 void compareRangeEnginesMutable(const std::array<size_t, NDims>& dims, size_t samples) {
   auto as = test::generate<Element, NDims>(-100, 100, dims);
-  EngineA engine_a{utility::asView(as)};
-  EngineB engine_b{utility::asView(as)};
+  EngineA engine_a{algo::utility::asView(as)};
+  EngineB engine_b{algo::utility::asView(as)};
 
   auto a_range_query_handle = engine_a.getRangeQueryHandle();
   auto b_range_query_handle = engine_b.getRangeQueryHandle();
-  types::Index<NDims> ql, qr, idxs;
+  algo::types::Index<NDims> ql, qr, idxs;
 
   auto a_query_handle = engine_a.getQueryHandle();
   auto b_query_handle = engine_b.getQueryHandle();
@@ -65,17 +61,15 @@ void compareRangeEnginesMutable(const std::array<size_t, NDims>& dims, size_t sa
   }
 }
 
-template <
-    typename EngineA, typename EngineB, typename Element = int, typename Output = int,
-    size_t NDims = 1>
+template <typename EngineA, typename EngineB, typename Element = int, typename Output = int, size_t NDims = 1>
 void compareRangeEnginesMutableRange(const std::array<size_t, NDims>& dims, size_t samples) {
   auto as = test::generate<Element, NDims>(-10, 10, dims);
-  EngineA engine_a{utility::asView(as)};
-  EngineB engine_b{utility::asView(as)};
+  EngineA engine_a{algo::utility::asView(as)};
+  EngineB engine_b{algo::utility::asView(as)};
 
   auto a_query_handle = engine_a.getRangeQueryHandle();
   auto b_query_handle = engine_b.getRangeQueryHandle();
-  types::Index<NDims> ql, qr;
+  algo::types::Index<NDims> ql, qr;
 
   while (samples--) {
     test::randomRange(ql, qr, dims);
@@ -96,4 +90,4 @@ void compareRangeEnginesMutableRange(const std::array<size_t, NDims>& dims, size
   }
 }
 
-}  // namespace algo::test
+}  // namespace test::rq

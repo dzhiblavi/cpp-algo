@@ -68,3 +68,21 @@ cc_library(
         ":utility",
     ],
 )
+
+cc_library(
+    name = "leftist_heap",
+    hdrs = [
+        "leftist_heap/leftist_heap.h",
+    ],
+    include_prefix = "algo",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "kdtree",
+    hdrs = [
+        "kdtree/kdtree.h",
+    ],
+    include_prefix = "algo",
+    visibility = ["//visibility:public"],
+)

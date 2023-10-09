@@ -1,10 +1,10 @@
 #include "generate.h"
 
-namespace algo::test {
+namespace test {
 
 std::mt19937& generator() {
   static std::mt19937 gen(0);
   return gen;
 }
 
-}  // namespace algo::test
+}  // namespace test

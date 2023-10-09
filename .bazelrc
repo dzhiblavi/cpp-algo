@@ -1,3 +1,5 @@
+build --cxxopt=-std=c++20
+
 #build:linux --cxxopt=-std=c++20
 #build:linux --conlyopt=-fexceptions
 #build:linux --fission=dbg,opt
@@ -37,5 +39,3 @@
 #build:release --config=linux
 #build:release --cxxopt="-O3"
 #build:release --copt="-march=native"
-
-build --cxxopt=-std=c++20

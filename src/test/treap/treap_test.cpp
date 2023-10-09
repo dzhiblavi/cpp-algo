@@ -1,18 +1,17 @@
-#include <gtest/gtest.h>
-
-#include <vector>
-
 #include "algo/treap/treap.h"
 
-namespace algo::treap {
+#include <gtest/gtest.h>
+#include <vector>
+
+namespace algo::treap::unit {
 
 struct traverse_print {
   template <typename Node>
   void operator()(const Node& node, int depth) const {
-    while (depth--) std::cout << "  ";
-    std::cout << "k = " << node.Key() 
-              << " v = " << node.Value()
-              << " p = " << node.Priority() << std::endl;
+    while (depth--) {
+      std::cout << "  ";
+    }
+    std::cout << "k = " << node.Key() << " v = " << node.Value() << " p = " << node.Priority() << std::endl;
   }
 };
 
@@ -34,7 +33,7 @@ struct traverse_le {
   mutable int last_value = 0;
 };
 
-TEST(key_node, insert) {
+TEST(TreapTest, Insert) {
   std::vector<value_node<int>> nodes;
   nodes.reserve(5);
   treap<value_node<int>> t;
@@ -46,7 +45,7 @@ TEST(key_node, insert) {
   }
 }
 
-TEST(key_node, erase) {
+TEST(TreapTest, Erase) {
   std::vector<value_node<int>> nodes;
   nodes.reserve(5);
   treap<value_node<int>> t;
@@ -62,14 +61,15 @@ TEST(key_node, erase) {
   ASSERT_EQ(t.find(3), nullptr);
 
   for (int i = 0; i < 5; ++i) {
-    if (i == 3) continue;
+    if (i == 3)
+      continue;
     ASSERT_NE(t.find(i), nullptr);
   }
 
   impl::traverse(t.root(), traverse_le());
 }
 
-TEST(implicit_key, insert) {
+TEST(TreapTest, InsertImplicit) {
   std::vector<implicit_key_node<int>> nodes;
   nodes.reserve(10);
   implicit_key_treap<implicit_key_node<int>> t;
@@ -90,5 +90,4 @@ TEST(implicit_key, insert) {
   ASSERT_EQ(collector.values, (std::vector<int>{5, 6, 7, 8, 1, 2, 3, 4, 9, 10}));
 }
 
-}  // namespace algo::treap
-
+}  // namespace algo::treap::unit
