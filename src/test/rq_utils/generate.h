@@ -1,24 +1,18 @@
 #pragma once
 
-#include "src/algo/utility/nd_container.h"
+#include "algo/utility/nd_container.h"
+#include "test/utility/random.h"
 
 #include <concepts>
 #include <functional>
 #include <random>
 
-namespace test {
-
-std::mt19937& generator();
-
-template <std::integral T>
-T random(T l, T r) {
-  return std::uniform_int_distribution<T>(l, r)(generator());
-}
+namespace test::rq_utils {
 
 template <size_t Dims>
 void generatePoint(std::array<int, Dims>& a) {
   for (auto& x : a) {
-    x = random(-1000, 1000);
+    x = utility::random::uniform(-1000, 1000);
   }
 }
 
@@ -80,14 +74,14 @@ void copyView(algo::utility::NDView<T, NDims> auto from, algo::utility::NDView<T
 template <std::integral T, size_t NDims>
 auto generate(T l, T r, const std::array<size_t, NDims>& dims) {
   std::uniform_int_distribution<T> distr(l, r);
-  auto gen = std::bind(distr, std::ref(generator()));
+  auto gen = std::bind(distr, std::ref(utility::random::generator()));
   return detail::generate<T, NDims, 0>(gen, dims);
 }
 
 template <size_t NDims>
 void randomIndex(std::array<size_t, NDims>& idxs, const std::array<size_t, NDims>& dims) {
   for (size_t i = 0; i < NDims; ++i) {
-    idxs[i] = std::uniform_int_distribution<size_t>(0, dims[i] - 1)(generator());
+    idxs[i] = std::uniform_int_distribution<size_t>(0, dims[i] - 1)(utility::random::generator());
   }
 }
 
@@ -95,9 +89,9 @@ template <size_t NDims>
 void randomRange(
     std::array<size_t, NDims>& left, std::array<size_t, NDims>& right, const std::array<size_t, NDims>& dims) {
   for (size_t i = 0; i < NDims; ++i) {
-    left[i] = std::uniform_int_distribution<size_t>(0, dims[i] - 1)(generator());
-    right[i] = std::uniform_int_distribution<size_t>(left[i], dims[i] - 1)(generator());
+    left[i] = std::uniform_int_distribution<size_t>(0, dims[i] - 1)(utility::random::generator());
+    right[i] = std::uniform_int_distribution<size_t>(left[i], dims[i] - 1)(utility::random::generator());
   }
 }
 
-}  // namespace test
+}  // namespace test::rq_utils

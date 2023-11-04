@@ -3,7 +3,9 @@ cc_library(
     hdrs = [
         "utility/nd_container.h",
         "utility/nd_helpers.h",
+        "utility/type_traits.h",
     ],
+    include_prefix = "algo",
     visibility = ["//visibility:public"],
 )
 
@@ -82,6 +84,25 @@ cc_library(
     name = "kdtree",
     hdrs = [
         "kdtree/kdtree.h",
+    ],
+    include_prefix = "algo",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "dsu",
+    hdrs = [
+        "dsu/dsu.hpp",
+    ],
+    include_prefix = "algo",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "min_stack",
+    hdrs = [
+        "min_stack/min_queue.hpp",
+        "min_stack/min_stack.hpp",
     ],
     include_prefix = "algo",
     visibility = ["//visibility:public"],

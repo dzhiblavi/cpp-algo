@@ -4,15 +4,17 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-namespace algo::leftist_heap::unit {
+namespace test::leftist_heap::unit {
 
-struct IntValue : public LeftistHeapHook<IntValue> {
+namespace lheap = ::algo::leftist_heap;
+
+struct IntValue : public lheap::LeftistHeapHook<IntValue> {
   auto operator<(const IntValue& rhs) const noexcept { return value < rhs.value; }
 
   int value;
 };
 
-using Heap = IntrusiveLeftistHeap<IntValue>;
+using Heap = lheap::IntrusiveLeftistHeap<IntValue>;
 
 TEST(LeftistHeapTest, InsertTwoElements) {
   Heap heap;
@@ -58,4 +60,4 @@ TEST(LeftistHeapTest, InsertManyElements) {
   }
 }
 
-}  // namespace algo::leftist_heap::unit
+}  // namespace test::leftist_heap::unit

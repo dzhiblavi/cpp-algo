@@ -1,20 +1,22 @@
 #include "algo/segment_tree/segment_tree.h"
 
-#include "test/utils/compare_range_engines.h"
-#include "test/utils/generate.h"
-#include "test/utils/range_query.h"
+#include "test/rq_utils/compare_range_engines.h"
+#include "test/rq_utils/generate.h"
+#include "test/rq_utils/range_query.h"
 
 #include <gtest/gtest.h>
 #include <optional>
 #include <random>
 
-namespace algo::sgt::unit {
+namespace test::sgt::unit {
+
+namespace sgt = ::algo::sgt;
 
 template <size_t NDims>
 void TestSGTvsNaiveMin(const std::array<size_t, NDims>& dims) {
-  test::rq::compareRangeEnginesMutable<
-      sgt::SimpleSegmentTree<int, test::rq::MinOp<int>, NDims>,
-      test::rq::NaiveRangeQueryEngine<int, test::rq::MinOp<int>, NDims> >(
+  rq_utils::compareRangeEnginesMutable<
+      sgt::SimpleSegmentTree<int, rq_utils::MinOp<int>, NDims>,
+      rq_utils::NaiveRangeQueryEngine<int, rq_utils::MinOp<int>, NDims> >(
       dims, 2 * std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()));
 }
 
@@ -38,7 +40,7 @@ void TestSGTvsNaiveMinAndCount(const std::array<size_t, NDims>& dims) {
   /**
    * @brief Combines minimal values and their respective counts appropriately
    */
-  struct MinAndCountOp : public base_op<MinAndCountNode, MinAndCountOp> {
+  struct MinAndCountOp : public sgt::base_op<MinAndCountNode, MinAndCountOp> {
     using Node = MinAndCountNode;
 
     Node neutral() const noexcept { return Node(std::numeric_limits<int>::max()); }
@@ -54,9 +56,9 @@ void TestSGTvsNaiveMinAndCount(const std::array<size_t, NDims>& dims) {
     }
   };
 
-  test::rq::compareRangeEnginesMutable<
+  rq_utils::compareRangeEnginesMutable<
       sgt::SegmentTree<MinAndCountNode, MinAndCountOp, NDims>,
-      test::rq::NaiveRangeQueryEngine<int, test::rq::MinAndCountOp<int>, NDims>, int, std::pair<int, int> >(
+      rq_utils::NaiveRangeQueryEngine<int, rq_utils::MinAndCountOp<int>, NDims>, int, std::pair<int, int> >(
       dims, 2 * std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()));
 }
 
@@ -83,7 +85,7 @@ void TestSGTvsNaiveSumRangeUpdate(const std::array<size_t, NDims>& dims) {
   /**
    * @brief Operation for SumAssignNode.
    */
-  struct SumAddOp : public base_op<SumAddNode, SumAddOp> {
+  struct SumAddOp : public sgt::base_op<SumAddNode, SumAddOp> {
     using Node = SumAddNode;
 
     Node neutral() const noexcept { return Node(0, 0); }
@@ -109,9 +111,9 @@ void TestSGTvsNaiveSumRangeUpdate(const std::array<size_t, NDims>& dims) {
   };
 
   // This will not work for NDims > 1 because push strategy with sum works for 1D only
-  test::rq::compareRangeEnginesMutableRange<
+  rq_utils::compareRangeEnginesMutableRange<
       sgt::SegmentTree<SumAddNode, SumAddOp, NDims>,
-      test::rq::NaiveRangeQueryEngine<int64_t, test::rq::SumOp<int64_t>, NDims>, int64_t, int64_t>(
+      rq_utils::NaiveRangeQueryEngine<int64_t, rq_utils::SumOp<int64_t>, NDims>, int64_t, int64_t>(
       dims, 2 * std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()));
 }
 
@@ -127,4 +129,4 @@ TEST(SegmentTreeTest, MinAndCountDims4Correctness) { TestSGTvsNaiveMinAndCount<4
 
 TEST(SegmentTreeTest, SumRangeUpdateDims1Correctness) { TestSGTvsNaiveSumRangeUpdate<1>({10000}); }
 
-}  // namespace algo::sgt::unit
+}  // namespace test::sgt::unit

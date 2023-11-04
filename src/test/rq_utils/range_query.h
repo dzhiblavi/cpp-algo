@@ -9,7 +9,7 @@
 #include <limits>
 #include <vector>
 
-namespace test::rq {
+namespace test::rq_utils {
 
 template <typename T, typename Op, size_t NDims>
 class NaiveRangeQueryEngine;
@@ -24,7 +24,7 @@ struct QueryHandle {
   algo::types::Index<NDims> index_;
 
   template <typename, typename, size_t>
-  friend class test::rq::NaiveRangeQueryEngine;
+  friend class test::rq_utils::NaiveRangeQueryEngine;
 };
 
 template <size_t NDims>
@@ -35,7 +35,7 @@ struct RangeQueryHandle {
   algo::types::Range<NDims> range_;
 
   template <typename, typename, size_t>
-  friend class test::rq::NaiveRangeQueryEngine;
+  friend class test::rq_utils::NaiveRangeQueryEngine;
 };
 
 }  // namespace detail
@@ -143,4 +143,4 @@ struct MinAndCountOp {
   value operator()(const value& a, const T& b) const noexcept { return (*this)(a, {b, 1}); }
 };
 
-}  // namespace test::rq
+}  // namespace test::rq_utils

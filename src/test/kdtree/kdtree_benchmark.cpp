@@ -1,18 +1,20 @@
 #include "algo/kdtree/kdtree.h"
-#include "test/utils/generate.h"
+#include "test/rq_utils/generate.h"
 
 #include <benchmark/benchmark.h>
 
-namespace algo::kdtree::benchmark {
+namespace test::kdtree::benchmark {
+
+namespace kdtree = ::algo::kdtree;
 
 template <size_t Dims>
 static void BM_kdtree_build(::benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
-    auto points = test::generatePoints<Dims>(state.range());
+    auto points = rq_utils::generatePoints<Dims>(state.range());
     state.ResumeTiming();
 
-    KDTree<std::array<int, Dims>, Dims> tree{points};
+    kdtree::KDTree<std::array<int, Dims>, Dims> tree{points};
   }
 
   state.SetComplexityN(state.range());
@@ -20,13 +22,13 @@ static void BM_kdtree_build(::benchmark::State& state) {
 
 template <size_t Dims, typename BenchmarkedOperation, typename ArgsGenerator>
 static void kdtreeGenericBenchmark(::benchmark::State& state, BenchmarkedOperation operation, ArgsGenerator generator) {
-  auto points = test::generatePoints<Dims>(state.range());
-  KDTree<std::array<int, Dims>, Dims> tree{points};
+  auto points = rq_utils::generatePoints<Dims>(state.range());
+  kdtree::KDTree<std::array<int, Dims>, Dims> tree{points};
   std::array<int, Dims> q;
 
   for (auto _ : state) {
     state.PauseTiming();
-    test::generatePoint(q);
+    rq_utils::generatePoint(q);
     const auto args_tuple = generator();
     state.ResumeTiming();
 
@@ -79,4 +81,4 @@ BENCHMARK(BM_kdtree_radius_search<2, 10>)->RangeMultiplier(2)->Range(1, kMaxTree
 BENCHMARK(BM_kdtree_radius_search<2, 100>)->RangeMultiplier(2)->Range(1, kMaxTreeSize)->Complexity();
 BENCHMARK(BM_kdtree_radius_search<2, 1000>)->RangeMultiplier(2)->Range(1, kMaxTreeSize)->Complexity();
 
-}  // namespace algo::kdtree::benchmark
+}  // namespace test::kdtree::benchmark

@@ -1,11 +1,13 @@
 #include "algo/kdtree/kdtree.h"
 
-#include "test/utils/generate.h"
+#include "test/rq_utils/generate.h"
 
 #include <gtest/gtest.h>
 #include <random>
 
-namespace algo::kdtree::unit {
+namespace test::kdtree::unit {
+
+namespace kdtree = ::algo::kdtree;
 
 template <typename PointType, size_t Dims, typename DistanceBinaryFunctor = kdtree::EuclideanDistance<PointType>>
 class NaiveKDTree {
@@ -64,7 +66,7 @@ void verifySameDistances(const PointType& to, const std::vector<PointType>& p1, 
 template <size_t Dims, typename TestOperation, typename ArgsGenerator>
 void kdtreeGenericTest(std::vector<std::array<int, Dims>> points, TestOperation operation, ArgsGenerator generator) {
   using PointType = std::array<int, Dims>;
-  using DistanceFunctor = EuclideanDistance<PointType>;
+  using DistanceFunctor = kdtree::EuclideanDistance<PointType>;
   static constexpr int kNumTrials = 10000;
 
   kdtree::KDTree<PointType, Dims, DistanceFunctor> kdtree(points);
@@ -72,7 +74,7 @@ void kdtreeGenericTest(std::vector<std::array<int, Dims>> points, TestOperation 
 
   PointType q;
   for (int _ = 0; _ < kNumTrials; ++_) {
-    test::generatePoint(q);
+    rq_utils::generatePoint(q);
     std::apply(
         [&](auto... args) {
           verifySameDistances<PointType, DistanceFunctor>(
@@ -95,7 +97,7 @@ void knnSearchTest(std::vector<std::array<int, Dims>> points) {
   kdtreeGenericTest(
       std::move(points),  //
       [](auto& tree, const auto& q, size_t max_count) { return tree.knnSearch(q, max_count); },
-      [point_count = points.size()] { return std::tuple<size_t>{test::random(size_t{0}, point_count)}; });
+      [point_count = points.size()] { return std::tuple<size_t>{utility::random::uniform(size_t{0}, point_count)}; });
 }
 
 template <size_t Dims>
@@ -103,22 +105,22 @@ void radiusSearchTest(std::vector<std::array<int, Dims>> points) {
   kdtreeGenericTest(
       std::move(points),  //
       [](auto& tree, const auto& q, uint64_t radius) { return tree.radiusSearch(q, radius); },
-      [] { return std::tuple<uint64_t>{test::random(0, 1000)}; });
+      [] { return std::tuple<uint64_t>{utility::random::uniform(0, 1000)}; });
 }
 
 template <size_t Dims>
 void nnSearchTest(size_t point_count) {
-  nnSearchTest(test::generatePoints<Dims>(point_count));
+  nnSearchTest(rq_utils::generatePoints<Dims>(point_count));
 }
 
 template <size_t Dims>
 void knnSearchTest(size_t point_count) {
-  knnSearchTest(test::generatePoints<Dims>(point_count));
+  knnSearchTest(rq_utils::generatePoints<Dims>(point_count));
 }
 
 template <size_t Dims>
 void radiusSearchTest(size_t point_count) {
-  radiusSearchTest(test::generatePoints<Dims>(point_count));
+  radiusSearchTest(rq_utils::generatePoints<Dims>(point_count));
 }
 
 TEST(KDTreeTest, nnSearchSmall2D) {
@@ -145,4 +147,4 @@ TEST(KDTreeTest, radiusSearchLarge2D) { radiusSearchTest<2>(1000); }
 TEST(KDTreeTest, radiusSearchLarge3D) { radiusSearchTest<3>(1000); }
 TEST(KDTreeTest, radiusSearchLarge5D) { radiusSearchTest<5>(1000); }
 
-}  // namespace algo::kdtree::unit
+}  // namespace test::kdtree::unit

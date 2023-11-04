@@ -3,8 +3,8 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 http_archive(
     name = "com_google_googletest",
-    urls = ["https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip"],
     strip_prefix = "googletest-release-1.12.1",
+    urls = ["https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip"],
 )
 
 git_repository(
@@ -14,11 +14,21 @@ git_repository(
     shallow_since = "1668175263 +0000",
 )
 
-#git_repository(
-    #name = "com_github_nelhage_rules_boost",
-    #shallow_since = "1630079166 -0700",
-    #commit = "fce83babe3f6287bccb45d2df013a309fa3194b8",
-    #remote = "https://github.com/nelhage/rules_boost",
-#)
-#load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
-#boost_deps()
+# git_repository(
+#     name = "com_github_nelhage_rules_boost",
+#     commit = "4ab574f9a84b42b1809978114a4664184716f4bf",
+#     remote = "https://github.com/nelhage/rules_boost",
+#     shallow_since = "1630079166 -0700",
+# )
+# load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
+# boost_deps()
+
+http_archive(
+    name = "com_github_nelhage_rules_boost",
+    strip_prefix = "rules_boost-4ab574f9a84b42b1809978114a4664184716f4bf",
+    url = "https://github.com/nelhage/rules_boost/archive/4ab574f9a84b42b1809978114a4664184716f4bf.tar.gz",
+)
+
+load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
+
+boost_deps()
