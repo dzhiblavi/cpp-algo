@@ -1,4 +1,4 @@
-#include "src/algo/treap/node.h"
+#include "algo/treap/node.h"
 
 namespace algo::treap {
 
@@ -8,4 +8,3 @@ std::mt19937& DefaultReproducibleGenerator() {
 }
 
 }  // namespace algo::treap
-

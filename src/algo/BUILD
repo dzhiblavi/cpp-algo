@@ -3,10 +3,12 @@ cc_library(
     hdrs = [
         "utility/nd_container.h",
         "utility/nd_helpers.h",
-        "utility/type_traits.h",
     ],
     include_prefix = "algo",
     visibility = ["//visibility:public"],
+    deps = [
+        "//src/utility",
+    ],
 )
 
 cc_library(
@@ -14,6 +16,7 @@ cc_library(
     hdrs = [
         "common/types.h",
     ],
+    include_prefix = "algo",
     visibility = ["//visibility:public"],
 )
 

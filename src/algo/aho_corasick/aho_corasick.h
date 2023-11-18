@@ -1,5 +1,4 @@
-#ifndef ALGO_AHO_CORASICK_H
-#define ALGO_AHO_CORASICK_H
+#pragma once
 
 #include <cstddef>
 #include <limits>
@@ -11,8 +10,7 @@ struct node_base {
   using NodePtr = SelfT*;
   using CharType = CharT;
 
-  static constexpr size_t NumChars =
-      std::numeric_limits<CharT>::max() - std::numeric_limits<CharT>::min() + 1;
+  static constexpr size_t NumChars = std::numeric_limits<CharT>::max() - std::numeric_limits<CharT>::min() + 1;
 
   NodePtr children[NumChars] = {nullptr};
   NodePtr jump[NumChars] = {nullptr};
@@ -31,9 +29,7 @@ class AhoCorasick {
 
   AhoCorasick() noexcept = default;
 
-  ~AhoCorasick() noexcept {
-    destroy(&root_);
-  }
+  ~AhoCorasick() noexcept { destroy(&root_); }
 
   template <typename It>
   void add_string(It begin, It end) {
@@ -92,5 +88,3 @@ class AhoCorasick {
 };
 
 }  // namespace algo::aho
-
-#endif  // ALGO_AHO_CORASICK_H

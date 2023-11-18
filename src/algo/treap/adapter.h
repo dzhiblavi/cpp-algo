@@ -1,5 +1,4 @@
-#ifndef ALGO_TREAP_ADAPTER_H
-#define ALGO_TREAP_ADAPTER_H
+#pragma once
 
 #include <concepts>
 #include <cstddef>
@@ -12,10 +11,10 @@ class value_adapter {
  public:
   using ValueType = T;
 
-  template <typename... Args> requires std::constructible_from<ValueType, Args...>
-  explicit value_adapter(Args&&... args)
-    noexcept(std::is_nothrow_constructible_v<ValueType, Args...>)
-    : value_(std::forward<Args>(args)...) {}
+  template <typename... Args>
+  requires std::constructible_from<ValueType, Args...>
+  explicit value_adapter(Args&&... args) noexcept(std::is_nothrow_constructible_v<ValueType, Args...>)
+      : value_(std::forward<Args>(args)...) {}
 
   T& Value() noexcept { return value_; };
   const T& Value() const noexcept { return value_; };
@@ -36,8 +35,10 @@ class size_adapter {
  protected:
   void UpdateAdapter(const SelfT* left, const SelfT* right) noexcept {
     size_ = 1;
-    if (left) size_ += left->Size();
-    if (right) size_ += right->Size();
+    if (left)
+      size_ += left->Size();
+    if (right)
+      size_ += right->Size();
   }
 
  private:
@@ -45,6 +46,3 @@ class size_adapter {
 };
 
 }  // namespace algo::treap
-
-#endif  // ALGO_TREAP_ADAPTER_H
-

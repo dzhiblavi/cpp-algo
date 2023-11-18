@@ -3,6 +3,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 http_archive(
     name = "com_google_googletest",
+    sha256 = "24564e3b712d3eb30ac9a85d92f7d720f60cc0173730ac166f27dda7fed76cb2",
     strip_prefix = "googletest-release-1.12.1",
     urls = ["https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip"],
 )
@@ -14,21 +15,9 @@ git_repository(
     shallow_since = "1668175263 +0000",
 )
 
-# git_repository(
-#     name = "com_github_nelhage_rules_boost",
-#     commit = "4ab574f9a84b42b1809978114a4664184716f4bf",
-#     remote = "https://github.com/nelhage/rules_boost",
-#     shallow_since = "1630079166 -0700",
-# )
-# load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
-# boost_deps()
-
-http_archive(
-    name = "com_github_nelhage_rules_boost",
-    strip_prefix = "rules_boost-4ab574f9a84b42b1809978114a4664184716f4bf",
-    url = "https://github.com/nelhage/rules_boost/archive/4ab574f9a84b42b1809978114a4664184716f4bf.tar.gz",
+git_repository(
+    name = "ranges-v3",
+    commit = "a81477931a8aa2ad025c6bda0609f38e09e4d7ec",
+    remote = "https://github.com/ericniebler/range-v3.git",
+    shallow_since = "1655847311 -0700",
 )
-
-load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
-
-boost_deps()

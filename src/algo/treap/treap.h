@@ -1,5 +1,4 @@
-#ifndef ALGO_TREAP_H
-#define ALGO_TREAP_H
+#pragma once
 
 #include "src/algo/treap/node.h"
 
@@ -12,7 +11,7 @@ namespace impl {
 template <typename Node>
 Node* find(Node* root, const typename Node::KeyType& key) noexcept {
   if (root->Key() == key) {
-    return root; 
+    return root;
   }
   if (root->Key() > key) {
     return root->left ? find(root->left, key) : nullptr;
@@ -24,23 +23,23 @@ Node* find(Node* root, const typename Node::KeyType& key) noexcept {
 template <typename Node>
 std::pair<Node*, Node*> split(Node* node, const typename Node::KeyType& key) noexcept {
   if (node == nullptr) {
-    return { nullptr, nullptr };
+    return {nullptr, nullptr};
   }
   if (node->Key() == key) {
     auto* r = node->right;
-    node->right = nullptr; 
+    node->right = nullptr;
     node->Update();
-    return { node, r };
+    return {node, r};
   } else if (node->Key() > key) {
     auto [l, r] = split(node->left, key);
     node->left = r;
     node->Update();
-    return { l, node };
+    return {l, node};
   } else {
     auto [l, r] = split(node->right, node->KeyLeftToRight(key));
     node->right = l;
     node->Update();
-    return { node, r };
+    return {node, r};
   }
 }
 
@@ -76,16 +75,17 @@ Node* insert(Node* root, Node* node) noexcept {
 template <typename Node>
 std::pair<Node*, Node*> erase(Node* root, const typename Node::KeyType& key) noexcept {
   if (root == nullptr || find(root, key) == nullptr) {
-    return { root, nullptr };
+    return {root, nullptr};
   }
   auto [l, r] = split(root, key);
   auto [u, v] = split(l, key - 1);
-  return { merge(u, r), v };
+  return {merge(u, r), v};
 }
 
 template <typename Node, typename F>
 void traverse(Node* root, const F& func) {
-  if (root == nullptr) return;
+  if (root == nullptr)
+    return;
   traverse(root->left, func);
   func(*root);
   traverse(root->right, func);
@@ -93,7 +93,8 @@ void traverse(Node* root, const F& func) {
 
 template <typename Node, typename F>
 void traverse_depth(Node* root, const F& func, int depth = 0) {
-  if (root == nullptr) return;
+  if (root == nullptr)
+    return;
   traverse_depth(root->left, func, depth + 1);
   func(*root, depth);
   traverse_depth(root->right, func, depth + 1);
@@ -110,7 +111,7 @@ class treap {
 
   std::pair<treap<Node>, treap<Node>> split(const typename Node::KeyType& key) && noexcept {
     auto [u, v] = impl::split(root_, key);
-    return { treap<Node>(u), treap<Node>(v) };
+    return {treap<Node>(u), treap<Node>(v)};
   }
 
   Node* erase(const typename Node::KeyType& key) noexcept {
@@ -119,9 +120,7 @@ class treap {
     return v;
   }
 
-  Node* find(const typename Node::KeyType& key) noexcept {
-    return impl::find(root_, key);
-  }
+  Node* find(const typename Node::KeyType& key) noexcept { return impl::find(root_, key); }
 
   Node* root() noexcept { return root_; }
 
@@ -136,7 +135,7 @@ class treap {
 
 template <typename Node>
 class implicit_key_treap {
- public: 
+ public:
   using SizeType = typename Node::SizeType;
 
   implicit_key_treap() noexcept = default;
@@ -144,14 +143,13 @@ class implicit_key_treap {
   void push_back(Node& node) noexcept { root_ = impl::merge(root_, &node); }
 
   void pop_back() noexcept {
-    auto size = root_->Size();   
+    auto size = root_->Size();
     root_ = impl::split(root_, size - 1).first;
   }
 
-  std::pair<implicit_key_treap<Node>, implicit_key_treap<Node>>
-  slice(SizeType end_inclusive) && noexcept {
+  std::pair<implicit_key_treap<Node>, implicit_key_treap<Node>> slice(SizeType end_inclusive) && noexcept {
     auto [u, v] = impl::split(root_, end_inclusive);
-    return { implicit_key_treap<Node>(u), implicit_key_treap<Node>(v) };
+    return {implicit_key_treap<Node>(u), implicit_key_treap<Node>(v)};
   }
 
   Node* root() noexcept { return root_; }
@@ -166,9 +164,8 @@ class implicit_key_treap {
 };
 
 template <typename Treap>
-Treap merge(Treap&& a, Treap&& b) noexcept { return Treap(impl::merge(a.root(), b.root())); }
+Treap merge(Treap&& a, Treap&& b) noexcept {
+  return Treap(impl::merge(a.root(), b.root()));
+}
 
 }  // namespace algo::treap
-
-#endif  // ALGO_TREAP_H
-

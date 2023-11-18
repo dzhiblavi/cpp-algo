@@ -1,7 +1,7 @@
 #pragma once
 
-#include "src/algo/common/types.h"
-#include "src/algo/utility/nd_container.h"
+#include "algo/common/types.h"
+#include "algo/utility/nd_container.h"
 
 #include <cassert>
 #include <cmath>
