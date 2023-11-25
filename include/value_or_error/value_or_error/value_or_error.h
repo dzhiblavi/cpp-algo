@@ -377,7 +377,7 @@ struct ValueConstructorImpl : public SetErrorImpl<ValueType, ErrorTypes...> {
   /**
    * @brief Constructs the object as holing a value using the specified value object
    */
-  template <typename FromType, typename = std::enable_if_t<std::same_as<ValueType, std::decay_t<FromType>>>>
+  template <typename FromType, typename = std::enable_if_t<std::is_same_v<ValueType, std::decay_t<FromType>>>>
   void ValueConstruct(FromType&& from) noexcept(std::is_nothrow_copy_constructible_v<ValueType>) {
     Base::LogicalIndex() = Base::LogicalValueIndex();
     new (Base::Data()) ValueType(std::forward<FromType>(from));
@@ -687,7 +687,7 @@ class [[nodiscard]] ValueOrError : public detail::ValueOrErrorImpl<ValueType, Er
    * @param from the value to be constructed from
    * @exception only ones thrown by ValueType's related copy/move constructor
    */
-  template <typename FromType, typename = std::enable_if_t<std::same_as<ValueType, std::decay_t<FromType>>>>
+  template <typename FromType, typename = std::enable_if_t<std::is_same_v<ValueType, std::decay_t<FromType>>>>
   /* implicit */ ValueOrError(FromType&& from) noexcept(std::is_nothrow_copy_constructible_v<ValueType>) {
     Base::ValueConstruct(std::forward<FromType>(from));
   }
