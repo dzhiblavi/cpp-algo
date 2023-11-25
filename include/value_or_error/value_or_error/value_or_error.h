@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -56,21 +55,39 @@ struct TraitsBase : public VariantStorage<Stored...> {
   template <typename Ref, typename FromVoid>
   using AssignmentRefSelector = ReferenceSelector<Ref, CopyAssignmentArray, MoveAssignmentArray, FromVoid>;
 
-  const auto& LogicalIndex() const noexcept { return StorageType::index; }
-  auto& LogicalIndex() noexcept { return StorageType::index; }
-  auto PhysicalIndex() const noexcept { return LogicalToPhysicalIndex(LogicalIndex()); }
+  const auto& LogicalIndex() const noexcept {
+    return StorageType::index;
+  }
+  auto& LogicalIndex() noexcept {
+    return StorageType::index;
+  }
+  auto PhysicalIndex() const noexcept {
+    return LogicalToPhysicalIndex(LogicalIndex());
+  }
 
-  const auto& Data() const noexcept { return StorageType::data; }
-  auto& Data() noexcept { return StorageType::data; }
+  const auto& Data() const noexcept {
+    return StorageType::data;
+  }
+  auto& Data() noexcept {
+    return StorageType::data;
+  }
 
-  static constexpr size_t LogicalEmptyIndex() noexcept { return 0; }
-  static constexpr size_t LogicalToPhysicalIndex(size_t index) noexcept { return index - 1; }
-  static constexpr size_t PhysicalToLogicalIndex(size_t index) noexcept { return index + 1; }
+  static constexpr size_t LogicalEmptyIndex() noexcept {
+    return 0;
+  }
+  static constexpr size_t LogicalToPhysicalIndex(size_t index) noexcept {
+    return index - 1;
+  }
+  static constexpr size_t PhysicalToLogicalIndex(size_t index) noexcept {
+    return index + 1;
+  }
 
   /**
    * @return whether this object neither holds a value nor an error (is empty)
    */
-  constexpr bool IsEmpty() const noexcept { return LogicalIndex() == LogicalEmptyIndex(); }
+  constexpr bool IsEmpty() const noexcept {
+    return LogicalIndex() == LogicalEmptyIndex();
+  }
 
  private:
   using StorageType::data;
@@ -86,11 +103,14 @@ struct Traits<ValueType, ErrorTypes...> : public TraitsBase<ValueType, ErrorType
   using StoredTypesList = list::list<ValueTypeWrapper<ValueType>, ErrorTypes...>;
   using ErrorTypesList = list::list<ErrorTypes...>;
 
-  static constexpr size_t LogicalValueIndex() noexcept { return 1; }
-  static constexpr size_t LogicalFirstErrorIndex() noexcept { return 2; }
+  static constexpr size_t LogicalValueIndex() noexcept {
+    return 1;
+  }
+  static constexpr size_t LogicalFirstErrorIndex() noexcept {
+    return 2;
+  }
 
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   static constexpr size_t LogicalErrorIndex() noexcept {
     return LogicalFirstErrorIndex() + list::indexOf<ErrorTypesList, ErrorType>;
   }
@@ -102,10 +122,11 @@ struct Traits<void, ErrorTypes...> : public TraitsBase<ErrorTypes...> {
   using StoredTypesList = list::list<ErrorTypes...>;
   using ErrorTypesList = list::list<ErrorTypes...>;
 
-  static constexpr size_t LogicalFirstErrorIndex() noexcept { return 1; }
+  static constexpr size_t LogicalFirstErrorIndex() noexcept {
+    return 1;
+  }
 
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   static constexpr size_t LogicalErrorIndex() noexcept {
     return LogicalFirstErrorIndex() + list::indexOf<ErrorTypesList, ErrorType>;
   }
@@ -115,7 +136,9 @@ template <bool AllTriviallyDestructible, typename... Types>
 struct DestructorHolder : public Traits<Types...> {
   using Base = Traits<Types...>;
 
-  ~DestructorHolder() noexcept { DestroyImpl(); }
+  ~DestructorHolder() noexcept {
+    DestroyImpl();
+  }
 
   /**
    * @brief Clears the object. The state after method is applied is Empty.
@@ -144,7 +167,9 @@ struct DestructorHolder<true, Types...> : public Traits<Types...> {
   /**
    * @brief Clears the object. The state after method is applied is Empty.
    */
-  void Clear() noexcept { Base::LogicalIndex() = Base::LogicalEmptyIndex(); }
+  void Clear() noexcept {
+    Base::LogicalIndex() = Base::LogicalEmptyIndex();
+  }
 };
 
 template <typename... Types>
@@ -158,7 +183,9 @@ struct GetValueImpl : public DestructorImpl<ValueType, ErrorTypes...> {
   /**
    * @return whether the object holds a value.
    */
-  constexpr bool HasValue() const noexcept { return Base::LogicalIndex() == Base::LogicalValueIndex(); }
+  constexpr bool HasValue() const noexcept {
+    return Base::LogicalIndex() == Base::LogicalValueIndex();
+  }
 
   /**
    * @return a reference to underlying value
@@ -196,7 +223,9 @@ struct GetValueImpl<void, ErrorTypes...> : public DestructorImpl<void, ErrorType
    * @return false
    * @note ValueOrError<void, ...> never holds a value
    */
-  constexpr bool HasValue() const noexcept { return false; }
+  constexpr bool HasValue() const noexcept {
+    return false;
+  }
 };
 
 template <typename ValueType, typename... ErrorTypes>
@@ -213,7 +242,9 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
   /**
    * @return whether the object holds any error
    */
-  constexpr bool HasAnyError() const noexcept { return Base::LogicalIndex() >= Base::LogicalFirstErrorIndex(); }
+  constexpr bool HasAnyError() const noexcept {
+    return Base::LogicalIndex() >= Base::LogicalFirstErrorIndex();
+  }
 
   /**
    * @return the index of underlying error in ErrorTypes... list
@@ -227,8 +258,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
   /**
    * @return whether this object holds an error with the specified type
    */
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   bool HasError() const noexcept {
     return Base::LogicalIndex() == Base::template LogicalErrorIndex<ErrorType>();
   }
@@ -237,8 +267,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    * @return reference to underlying error of the specified type
    * @exception UB if !HasError<ErrorType>()
    */
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   ErrorType& GetError() & noexcept {
     assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
     return reinterpret_cast<ErrorType&>(Base::Data());
@@ -248,8 +277,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    * @return rvalue reference to the underlying error object of the specified type
    * @exception UB if !HasError<ErrorType>()
    */
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   ErrorType&& GetError() && noexcept {
     assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
     return reinterpret_cast<ErrorType&&>(Base::Data());
@@ -259,8 +287,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    * @return const reference to underlying error object of the specified type
    * @exception UB if !HasError<ErrorType>()
    */
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   const ErrorType& GetError() const& noexcept {
     assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
     return reinterpret_cast<const ErrorType&>(Base::Data());
@@ -270,8 +297,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    * @return const rvalue reference to underlying error object of the specified type
    * @exception UB if !HasError<ErrorType>()
    */
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   const ErrorType&& GetError() const&& noexcept {
     assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
     return reinterpret_cast<const ErrorType&&>(Base::Data());
@@ -326,8 +352,7 @@ struct SetErrorImpl : public GetErrorImpl<ValueType, ErrorTypes...> {
   /**
    * @brief Sets the error with the specified value
    */
-  template <typename ErrorType>
-  requires list::contains<ErrorTypesList, ErrorType>
+  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   void SetError(ErrorType&& error) & {
     Base::Clear();
     Base::LogicalIndex() = Base::template LogicalErrorIndex<ErrorType>();
@@ -352,8 +377,7 @@ struct ValueConstructorImpl : public SetErrorImpl<ValueType, ErrorTypes...> {
   /**
    * @brief Constructs the object as holing a value using the specified value object
    */
-  template <typename FromType>
-  requires std::same_as<ValueType, std::decay_t<FromType>>
+  template <typename FromType, typename = std::enable_if_t<std::same_as<ValueType, std::decay_t<FromType>>>>
   void ValueConstruct(FromType&& from) noexcept(std::is_nothrow_copy_constructible_v<ValueType>) {
     Base::LogicalIndex() = Base::LogicalValueIndex();
     new (Base::Data()) ValueType(std::forward<FromType>(from));
@@ -402,8 +426,9 @@ template <typename ValueType, typename... ErrorTypes>
 struct AssignmentsImpl : public ConstructorsImpl<ValueType, ErrorTypes...> {
   using Base = ConstructorsImpl<ValueType, ErrorTypes...>;
 
-  template <typename Assignee>
-  requires std::is_same_v<std::decay_t<Assignee>, ValueOrError<ValueType, ErrorTypes...>>
+  template <
+      typename Assignee,
+      typename = std::enable_if_t<std::is_same_v<std::decay_t<Assignee>, ValueOrError<ValueType, ErrorTypes...>>>>
   void Assign(Assignee&& rhs) & noexcept {
     if (this == &rhs) [[unlikely]] {
       return;
@@ -524,14 +549,18 @@ struct DiscardValueImpl<void, ErrorTypes...> : public DiscardErrorImpl<void, Err
    * @return an object of type ValueOrError<void, ErrorTypes...> with the same state as this
    * @note actually does nothing for VoidOrError instances
    */
-  auto& DiscardValue() & noexcept { return *this; }
+  auto& DiscardValue() & noexcept {
+    return *this;
+  }
 
   /**
    * @brief Discards the value from the type
    * @return an object of type ValueOrError<void, ErrorTypes...> with the same state as this
    * @note actually does nothing for VoidOrError instances
    */
-  const auto& DiscardValue() const& noexcept { return *this; }
+  const auto& DiscardValue() const& noexcept {
+    return *this;
+  }
 };
 
 template <typename ValueType, typename... ErrorTypes>
@@ -548,9 +577,10 @@ struct VisitImpl : public DiscardValueImpl<ValueType, ErrorTypes...> {
    *
    * @exception UB if the object is empty (i.e. neither holds a value nor an error)
    */
-  template <typename Visitor>
-  requires(std::invocable<Visitor, ValueType> && (... && std::invocable<Visitor, ErrorTypes>)) decltype(auto)
-  Visit(Visitor&& visitor) {
+  template <
+      typename Visitor,
+      typename = std::enable_if_t<std::invocable<Visitor, ValueType> && (... && std::invocable<Visitor, ErrorTypes>)>>
+  decltype(auto) Visit(Visitor&& visitor) {
     assert(!Base::IsEmpty() && "Visit() called on an empty object");
     return Base::template VisitArray<Visitor, void>::Call(
         std::forward<Visitor>(visitor), Base::Data(), Base::PhysicalIndex());
@@ -560,10 +590,11 @@ struct VisitImpl : public DiscardValueImpl<ValueType, ErrorTypes...> {
    * @brief Visit paradigm implementation for ValueOrError objects
    * @see Visit, this is a const version of it
    */
-  template <typename Visitor>
-  requires(
-      std::invocable<Visitor, const ValueType> && (... && std::invocable<Visitor, const ErrorTypes>)) decltype(auto)
-  Visit(Visitor&& visitor) const {
+  template <
+      typename Visitor,
+      typename = std::enable_if_t<
+          std::invocable<Visitor, const ValueType> && (... && std::invocable<Visitor, const ErrorTypes>)>>
+  decltype(auto) Visit(Visitor&& visitor) const {
     assert(!Base::IsEmpty() && "Visit() called on an empty object");
     return Base::template VisitArray<Visitor, const void>::Call(
         std::forward<Visitor>(visitor), Base::Data(), Base::PhysicalIndex());
@@ -581,9 +612,10 @@ struct VisitImpl<void, ErrorTypes...> : public DiscardValueImpl<void, ErrorTypes
    * - F() if the object is empty (holds a void value).
    * - F(GetError<E>()) if the object holds an error of type E.
    */
-  template <typename Visitor>
-  requires(std::invocable<Visitor> && (... && std::invocable<Visitor, ErrorTypes>)) decltype(auto)
-  Visit(Visitor&& visitor) {
+  template <
+      typename Visitor,
+      typename = std::enable_if_t<std::invocable<Visitor> && (... && std::invocable<Visitor, ErrorTypes>)>>
+  decltype(auto) Visit(Visitor&& visitor) {
     if (!Base::HasAnyError()) {
       return std::forward<Visitor>(visitor)();
     } else {
@@ -596,9 +628,10 @@ struct VisitImpl<void, ErrorTypes...> : public DiscardValueImpl<void, ErrorTypes
    * @brief Visit paradigm implementation for ValueOrError objects
    * @see Visit, this is a const version of it
    */
-  template <typename Visitor>
-  requires(std::invocable<Visitor> && (... && std::invocable<Visitor, const ErrorTypes>)) decltype(auto)
-  Visit(Visitor&& visitor) const {
+  template <
+      typename Visitor,
+      typename = std::enable_if_t<std::invocable<Visitor> && (... && std::invocable<Visitor, const ErrorTypes>)>>
+  decltype(auto) Visit(Visitor&& visitor) const {
     if (!Base::HasAnyError()) {
       return std::forward<Visitor>(visitor)();
     } else {
@@ -654,16 +687,23 @@ class [[nodiscard]] ValueOrError : public detail::ValueOrErrorImpl<ValueType, Er
    * @param from the value to be constructed from
    * @exception only ones thrown by ValueType's related copy/move constructor
    */
-  template <typename FromType>
-  requires std::same_as<ValueType, std::decay_t<FromType>>
+  template <typename FromType, typename = std::enable_if_t<std::same_as<ValueType, std::decay_t<FromType>>>>
   /* implicit */ ValueOrError(FromType&& from) noexcept(std::is_nothrow_copy_constructible_v<ValueType>) {
     Base::ValueConstruct(std::forward<FromType>(from));
   }
 
-  ValueOrError(ValueOrError& voe) { Base::Construct(voe); }
-  ValueOrError(const ValueOrError& voe) { Base::Construct(voe); }
-  ValueOrError(ValueOrError&& voe) { Base::Construct(std::move(voe)); }
-  ValueOrError(const ValueOrError&& voe) { Base::Construct(std::move(voe)); }
+  ValueOrError(ValueOrError& voe) {
+    Base::Construct(voe);
+  }
+  ValueOrError(const ValueOrError& voe) {
+    Base::Construct(voe);
+  }
+  ValueOrError(ValueOrError&& voe) {
+    Base::Construct(std::move(voe));
+  }
+  ValueOrError(const ValueOrError&& voe) {
+    Base::Construct(std::move(voe));
+  }
 
   /**
    * @brief ValueOrError conversion constructor
@@ -681,11 +721,11 @@ class [[nodiscard]] ValueOrError : public detail::ValueOrErrorImpl<ValueType, Er
    * @exception (UB) from holds a value, and this type's ValueType is void
    * @exception Any exception thrown from copy or move constructor of respective type
    */
-  template <typename FromVoe>
-  requires detail::Convertible<
-      detail::TransferTemplate<std::decay_t<FromVoe>, detail::list::list>,  //
-      detail::list::list<ValueType, ErrorTypes...>>
-  /* implicit */ ValueOrError(FromVoe&& from) {
+  template <
+      typename FromVoe, typename = std::enable_if_t<detail::Convertible<
+                            detail::TransferTemplate<std::decay_t<FromVoe>, detail::list::list>,  //
+                            detail::list::list<ValueType, ErrorTypes...>>>>
+  /* implicit */ ValueOrError(FromVoe&& from, void* = nullptr) {
     Base::ConvertConstruct(std::forward<FromVoe>(from), static_cast<std::decay_t<FromVoe>*>(nullptr));
   }
 
@@ -720,10 +760,10 @@ class [[nodiscard]] ValueOrError : public detail::ValueOrErrorImpl<ValueType, Er
    * @exception (UB) rhs holds a value, and this type's ValueType is void
    * @exception Any exception thrown from copy or move constructor of respective type
    */
-  template <typename FromVoe>
-  requires detail::Convertible<
-      detail::TransferTemplate<std::decay_t<FromVoe>, detail::list::list>,  //
-      detail::list::list<ValueType, ErrorTypes...>>
+  template <
+      typename FromVoe, typename = std::enable_if_t<detail::Convertible<
+                            detail::TransferTemplate<std::decay_t<FromVoe>, detail::list::list>,  //
+                            detail::list::list<ValueType, ErrorTypes...>>>>
   SelfType& operator=(FromVoe&& rhs) & {
     Base::ConvertAssign(std::forward<FromVoe>(rhs), static_cast<std::decay_t<FromVoe>*>(nullptr));
     return *this;
