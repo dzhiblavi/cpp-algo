@@ -1,5 +1,6 @@
 #include "algo/leftist_heap/leftist_heap.h"
 
+#include <array>
 #include <compare>
 #include <gtest/gtest.h>
 #include <iostream>

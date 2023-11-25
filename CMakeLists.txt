@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+
+project(
+  cpp_algo
+  VERSION 0.1
+  LANGUAGES CXX
+)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ".so")
+
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/third_party" ${CMAKE_MODULE_PATH})
+
+add_subdirectory(src)
+add_subdirectory(test)

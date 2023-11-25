@@ -1,8 +1,8 @@
 #include "algo/segment_tree/segment_tree.h"
 
-#include "test/rq_utils/compare_range_engines.h"
-#include "test/rq_utils/generate.h"
-#include "test/rq_utils/range_query.h"
+#include "test/algo/rq_utils/compare_range_engines.h"
+#include "test/algo/rq_utils/generate.h"
+#include "test/algo/rq_utils/range_query.h"
 
 #include <gtest/gtest.h>
 #include <optional>

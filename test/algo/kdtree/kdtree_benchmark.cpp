@@ -1,5 +1,5 @@
 #include "algo/kdtree/kdtree.h"
-#include "test/rq_utils/generate.h"
+#include "test/algo/rq_utils/generate.h"
 
 #include <benchmark/benchmark.h>
 
@@ -82,3 +82,5 @@ BENCHMARK(BM_kdtree_radius_search<2, 100>)->RangeMultiplier(2)->Range(1, kMaxTre
 BENCHMARK(BM_kdtree_radius_search<2, 1000>)->RangeMultiplier(2)->Range(1, kMaxTreeSize)->Complexity();
 
 }  // namespace test::kdtree::benchmark
+
+BENCHMARK_MAIN();

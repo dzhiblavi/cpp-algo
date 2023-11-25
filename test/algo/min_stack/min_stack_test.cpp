@@ -1,4 +1,4 @@
-#include "algo/min_stack/min_queue.hpp"
+#include "algo/min_stack/min_queue.h"
 
 #include <gtest/gtest.h>
 

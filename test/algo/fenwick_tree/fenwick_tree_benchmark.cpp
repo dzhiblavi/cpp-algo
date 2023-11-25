@@ -1,5 +1,5 @@
 #include "algo/fenwick_tree/fenwick_tree.h"
-#include "test/rq_utils/benchmark.h"
+#include "test/algo/rq_utils/benchmark.h"
 
 namespace test::fwt::benchmark {
 
@@ -22,3 +22,5 @@ BENCHMARK(BM_fenwick_tree_query)->RangeMultiplier(2)->Range(1, 1ULL << 20)->Comp
 BENCHMARK(BM_fenwick_tree_update)->RangeMultiplier(2)->Range(1, 1ULL << 20)->Complexity();
 
 }  // namespace test::fwt::benchmark
+
+BENCHMARK_MAIN();

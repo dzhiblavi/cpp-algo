@@ -1,0 +1,146 @@
+#pragma once
+
+#include "utility/helpers.h"
+#include "utility/templates.h"
+#include "utility/type_list.h"
+
+#include <concepts>
+#include <cstdint>
+
+namespace voe {
+
+template <typename ValueType, typename... ErrorTypes>
+class [[nodiscard]] ValueOrError;
+
+}  // namespace voe
+
+namespace voe::detail {
+
+namespace list = ::util::list;
+
+namespace impl {
+
+template <typename FromTemplate, template <typename...> class ToTemplate, typename... HeadArgs>
+struct TransferTemplate;
+
+template <
+    template <typename...> class FromTemplate, template <typename...> class ToTemplate, typename... Args,
+    typename... HeadArgs>
+struct TransferTemplate<FromTemplate<Args...>, ToTemplate, HeadArgs...> {
+  using type = ToTemplate<HeadArgs..., Args...>;
+};
+
+template <typename Callable, typename... Types>
+struct VisitInvokeResult;
+
+template <typename Callable, typename T, typename... Types>
+struct VisitInvokeResult<Callable, T, Types...> {
+  using type = std::invoke_result_t<Callable, T>;
+};
+
+template <typename Callable>
+struct VisitInvokeResult<Callable> {
+  using type = std::invoke_result_t<Callable>;
+};
+
+template <typename T>
+struct ErrorTypes {
+  using type = list::list<T>;
+};
+
+template <typename ValueType, typename... ETs>
+struct ErrorTypes<ValueOrError<ValueType, ETs...>> {
+  using type = list::list<ETs...>;
+};
+
+template <uint64_t NumVariants, std::integral... Types>
+struct MinimalSizedIndexType;
+
+template <uint64_t NumVariants, std::integral Type, std::integral... Types>
+requires(NumVariants <= static_cast<uint64_t>(std::numeric_limits<Type>::max()))
+struct MinimalSizedIndexType<NumVariants, Type, Types...> {
+  using type = Type;
+};
+
+template <uint64_t NumVariants, std::integral Type, std::integral... Types>
+requires(NumVariants > static_cast<uint64_t>(std::numeric_limits<Type>::max()))
+struct MinimalSizedIndexType<NumVariants, Type, Types...> {
+  using type = typename MinimalSizedIndexType<NumVariants, Types...>::type;
+};
+
+template <typename FromVariadic, typename ToVariadic>
+struct Convertible : public std::false_type {};
+
+template <typename FromValueType, typename... FromErrorTypes, typename ValueType, typename... ErrorTypes>
+struct Convertible<list::list<FromValueType, FromErrorTypes...>, list::list<ValueType, ErrorTypes...>> {
+  static constexpr bool value =
+      (std::is_same_v<void, FromValueType> || std::is_same_v<ValueType, void> ||
+       std::is_same_v<
+           ValueType, FromValueType>)&&(list::set::subsetOf<list::list<FromErrorTypes...>, list::list<ErrorTypes...>>);
+};
+
+template <
+    typename Ref, template <class...> class OnLvalueReference, template <class...> class OnRvalueReference,
+    typename... Args>
+struct ReferenceSelector;
+
+template <
+    typename T, template <class...> class OnLvalueReference, template <class...> class OnRvalueReference,
+    typename... Args>
+struct ReferenceSelector<T&, OnLvalueReference, OnRvalueReference, Args...> {
+  using type = OnLvalueReference<Args...>;
+};
+
+template <
+    typename T, template <class...> class OnLvalueReference, template <class...> class OnRvalueReference,
+    typename... Args>
+struct ReferenceSelector<T&&, OnLvalueReference, OnRvalueReference, Args...> {
+  using type = OnRvalueReference<Args...>;
+};
+
+}  // namespace impl
+
+template <typename FromTemplate, template <typename...> class ToTemplate, typename... HeadArgs>
+using TransferTemplate = typename impl::TransferTemplate<FromTemplate, ToTemplate, HeadArgs...>::type;
+
+template <typename Callable, typename... Types>
+using VisitInvokeResult = typename impl::VisitInvokeResult<Callable, Types...>::type;
+
+template <typename T>
+using ErrorTypes = typename impl::ErrorTypes<T>::type;
+
+template <typename... TypesFrom>
+struct IndexMapping {
+  template <typename... TypesTo>
+  struct MapTo {
+    static constexpr size_t indices[sizeof...(TypesFrom)] = {list::indexOf<list::list<TypesTo...>, TypesFrom>...};
+  };
+
+  template <typename... TypesTo>
+  struct MapTo<list::list<TypesTo...>> : public MapTo<TypesTo...> {};
+};
+
+template <typename... TypesFrom>
+struct IndexMapping<list::list<TypesFrom...>> : public IndexMapping<TypesFrom...> {};
+
+template <size_t NumVariants>
+using MinimalSizedIndexType =
+    typename impl::MinimalSizedIndexType<NumVariants, uint8_t, uint16_t, uint32_t, uint64_t>::type;
+
+template <
+    typename Ref,                                 //
+    template <class...> class OnLvalueReference,  //
+    template <class...> class OnRvalueReference,  //
+    typename... Args>
+using ReferenceSelector = typename impl::ReferenceSelector<Ref, OnLvalueReference, OnRvalueReference, Args...>::type;
+
+template <typename... Errors>
+static constexpr bool AllDecayed = (... && std::is_same_v<Errors, std::decay_t<Errors>>);
+
+template <typename FromVariadic, typename ToVariadic>
+using ConvertiblePredicate = impl::Convertible<FromVariadic, ToVariadic>;
+
+template <typename FromVariadic, typename ToVariadic>
+static constexpr bool Convertible = ConvertiblePredicate<FromVariadic, ToVariadic>::value;
+
+}  // namespace voe::detail

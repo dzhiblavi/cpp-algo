@@ -1,6 +1,6 @@
 #include "algo/sparse_tree/sparse_tree.h"
-#include "test/rq_utils/benchmark.h"
-#include "test/rq_utils/range_query.h"
+#include "test/algo/rq_utils/benchmark.h"
+#include "test/algo/rq_utils/range_query.h"
 
 namespace test::spt::benchmark {
 
@@ -18,3 +18,5 @@ BENCHMARK(BM_sparse_tree_build)->RangeMultiplier(2)->Range(1, 1ULL << 20)->Compl
 BENCHMARK(BM_sparse_tree_query)->RangeMultiplier(2)->Range(1, 1ULL << 20)->Complexity();
 
 }  // namespace test::spt::benchmark
+
+BENCHMARK_MAIN();

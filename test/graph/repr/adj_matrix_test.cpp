@@ -1,4 +1,4 @@
-#include "graph/repr/adj_matrix.h"
+#include "graph/repr/adj_matrix/adj_matrix.h"
 
 #include <gtest/gtest.h>
 

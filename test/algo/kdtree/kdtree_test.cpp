@@ -1,6 +1,6 @@
 #include "algo/kdtree/kdtree.h"
 
-#include "test/rq_utils/generate.h"
+#include "test/algo/rq_utils/generate.h"
 
 #include <gtest/gtest.h>
 #include <random>
