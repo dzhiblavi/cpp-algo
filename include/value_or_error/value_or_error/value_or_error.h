@@ -578,8 +578,8 @@ struct VisitImpl : public DiscardValueImpl<ValueType, ErrorTypes...> {
    * @exception UB if the object is empty (i.e. neither holds a value nor an error)
    */
   template <
-      typename Visitor,
-      typename = std::enable_if_t<std::invocable<Visitor, ValueType> && (... && std::invocable<Visitor, ErrorTypes>)>>
+      typename Visitor, typename = std::enable_if_t<
+                            std::is_invocable_v<Visitor, ValueType> && (... && std::invocable<Visitor, ErrorTypes>)>>
   decltype(auto) Visit(Visitor&& visitor) {
     assert(!Base::IsEmpty() && "Visit() called on an empty object");
     return Base::template VisitArray<Visitor, void>::Call(
@@ -593,7 +593,7 @@ struct VisitImpl : public DiscardValueImpl<ValueType, ErrorTypes...> {
   template <
       typename Visitor,
       typename = std::enable_if_t<
-          std::invocable<Visitor, const ValueType> && (... && std::invocable<Visitor, const ErrorTypes>)>>
+          std::is_invocable_v<Visitor, const ValueType> && (... && std::is_invocable_v<Visitor, const ErrorTypes>)>>
   decltype(auto) Visit(Visitor&& visitor) const {
     assert(!Base::IsEmpty() && "Visit() called on an empty object");
     return Base::template VisitArray<Visitor, const void>::Call(
@@ -614,7 +614,7 @@ struct VisitImpl<void, ErrorTypes...> : public DiscardValueImpl<void, ErrorTypes
    */
   template <
       typename Visitor,
-      typename = std::enable_if_t<std::invocable<Visitor> && (... && std::invocable<Visitor, ErrorTypes>)>>
+      typename = std::enable_if_t<std::is_invocable_v<Visitor> && (... && std::is_invocable_v<Visitor, ErrorTypes>)>>
   decltype(auto) Visit(Visitor&& visitor) {
     if (!Base::HasAnyError()) {
       return std::forward<Visitor>(visitor)();
@@ -629,8 +629,8 @@ struct VisitImpl<void, ErrorTypes...> : public DiscardValueImpl<void, ErrorTypes
    * @see Visit, this is a const version of it
    */
   template <
-      typename Visitor,
-      typename = std::enable_if_t<std::invocable<Visitor> && (... && std::invocable<Visitor, const ErrorTypes>)>>
+      typename Visitor, typename = std::enable_if_t<
+                            std::is_invocable_v<Visitor> && (... && std::is_invocable_v<Visitor, const ErrorTypes>)>>
   decltype(auto) Visit(Visitor&& visitor) const {
     if (!Base::HasAnyError()) {
       return std::forward<Visitor>(visitor)();
