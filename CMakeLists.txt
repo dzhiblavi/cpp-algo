@@ -15,5 +15,16 @@ set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ".so")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/third_party" ${CMAKE_MODULE_PATH})
 
+set(DLIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(src)
-add_subdirectory(test)
+
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(STANDALONE YES)
+else()
+  set(STANDALONE NO)
+endif()
+
+if (STANDALONE)
+  add_subdirectory(test)
+endif()
