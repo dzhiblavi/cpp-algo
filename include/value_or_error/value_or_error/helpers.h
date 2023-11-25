@@ -4,8 +4,8 @@
 #include "utility/templates.h"
 #include "utility/type_list.h"
 
-#include <concepts>
 #include <cstdint>
+#include <limits>
 
 namespace voe {
 
@@ -53,19 +53,19 @@ struct ErrorTypes<ValueOrError<ValueType, ETs...>> {
   using type = list::list<ETs...>;
 };
 
-template <uint64_t NumVariants, std::integral... Types>
+template <uint64_t NumVariants, bool Fits, typename... Types>
 struct MinimalSizedIndexType;
 
-template <uint64_t NumVariants, std::integral Type, std::integral... Types>
-requires(NumVariants <= static_cast<uint64_t>(std::numeric_limits<Type>::max()))
-struct MinimalSizedIndexType<NumVariants, Type, Types...> {
+template <uint64_t NumVariants, typename Type, typename... Types>
+struct MinimalSizedIndexType<NumVariants, true, Type, Types...> {
   using type = Type;
 };
 
-template <uint64_t NumVariants, std::integral Type, std::integral... Types>
-requires(NumVariants > static_cast<uint64_t>(std::numeric_limits<Type>::max()))
-struct MinimalSizedIndexType<NumVariants, Type, Types...> {
-  using type = typename MinimalSizedIndexType<NumVariants, Types...>::type;
+template <uint64_t NumVariants, typename Type, typename... Types>
+struct MinimalSizedIndexType<NumVariants, false, Type, Types...> {
+  using first = list::get<list::list<Types...>, 0>;
+  using type =
+      typename MinimalSizedIndexType<NumVariants, std::numeric_limits<first>::max() >= NumVariants, Types...>::type;
 };
 
 template <typename FromVariadic, typename ToVariadic>
@@ -124,8 +124,8 @@ template <typename... TypesFrom>
 struct IndexMapping<list::list<TypesFrom...>> : public IndexMapping<TypesFrom...> {};
 
 template <size_t NumVariants>
-using MinimalSizedIndexType =
-    typename impl::MinimalSizedIndexType<NumVariants, uint8_t, uint16_t, uint32_t, uint64_t>::type;
+using MinimalSizedIndexType = typename impl::MinimalSizedIndexType<
+    NumVariants, std::numeric_limits<uint8_t>::max() >= NumVariants, uint8_t, uint16_t, uint32_t, uint64_t>::type;
 
 template <
     typename Ref,                                 //

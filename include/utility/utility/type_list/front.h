@@ -3,6 +3,7 @@
 #include "utility/type_list/list.h"
 
 #include <cstddef>
+#include <tuple>
 
 namespace util::list {
 
