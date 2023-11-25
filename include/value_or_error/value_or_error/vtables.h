@@ -9,7 +9,9 @@ namespace voe::vtables {
 
 template <bool IsTriviallyDestructible, typename Type>
 struct DestructorFunctor {
-  static constexpr void Call(void* ptr) noexcept { static_cast<Type*>(ptr)->~Type(); }
+  static constexpr void Call(void* ptr) noexcept {
+    static_cast<Type*>(ptr)->~Type();
+  }
 };
 
 template <typename Type>
@@ -24,7 +26,9 @@ struct DestructorFunctorArray {
   static constexpr DestructorFunction array[sizeof...(Types)] = {
       DestructorFunctor<std::is_trivially_destructible_v<Types>, Types>::Call...};
 
-  static constexpr void Call(void* ptr, size_t index) noexcept { array[index](ptr); }
+  static constexpr void Call(void* ptr, size_t index) noexcept {
+    array[index](ptr);
+  }
 };
 
 template <typename Callable, typename Type>
@@ -62,14 +66,15 @@ struct CopyConstructorFunctor {
 };
 
 template <typename FromVoid, typename... Types>
-requires std::is_same_v<void, std::remove_cv_t<FromVoid>>
 struct CopyConstructorFunctorArray {
   using CopyConstructorFunction = void (*)(FromVoid*, void*);
 
   static constexpr CopyConstructorFunction array[sizeof...(Types)] = {
       CopyConstructorFunctor<util::hlp::propagateConst<FromVoid, Types>>::Call...};
 
-  static constexpr void Call(FromVoid* from, void* to, size_t index) { array[index](from, to); }
+  static constexpr void Call(FromVoid* from, void* to, size_t index) {
+    array[index](from, to);
+  }
 };
 
 template <typename Type>
@@ -84,14 +89,15 @@ struct CopyAssignmentFunctor {
 };
 
 template <typename FromVoid, typename... Types>
-requires std::is_same_v<void, std::remove_cv_t<FromVoid>>
 struct CopyAssignmentFunctorArray {
   using CopyAssignmentFunction = void (*)(FromVoid*, void*);
 
   static constexpr CopyAssignmentFunction array[sizeof...(Types)] = {
       CopyAssignmentFunctor<util::hlp::propagateConst<FromVoid, Types>>::Call...};
 
-  static constexpr void Call(FromVoid* from, void* to, size_t index) { array[index](from, to); }
+  static constexpr void Call(FromVoid* from, void* to, size_t index) {
+    array[index](from, to);
+  }
 };
 
 template <typename Type>
@@ -106,14 +112,15 @@ struct MoveConstructorFunctor {
 };
 
 template <typename FromVoid, typename... Types>
-requires std::is_same_v<void, std::remove_cv_t<FromVoid>>
 struct MoveConstructorFunctorArray {
   using MoveConstructorFunction = void (*)(FromVoid*, void*);
 
   static constexpr MoveConstructorFunction array[sizeof...(Types)] = {
       MoveConstructorFunctor<util::hlp::propagateConst<FromVoid, Types>>::Call...};
 
-  static constexpr void Call(FromVoid* from, void* to, size_t index) { array[index](from, to); }
+  static constexpr void Call(FromVoid* from, void* to, size_t index) {
+    array[index](from, to);
+  }
 };
 
 template <typename Type>
@@ -128,14 +135,15 @@ struct MoveAssignmentFunctor {
 };
 
 template <typename FromVoid, typename... Types>
-requires std::is_same_v<void, std::remove_cv_t<FromVoid>>
 struct MoveAssignmentFunctorArray {
   using MoveAssignmentFunction = void (*)(FromVoid*, void*);
 
   static constexpr MoveAssignmentFunction array[sizeof...(Types)] = {
       MoveAssignmentFunctor<util::hlp::propagateConst<FromVoid, Types>>::Call...};
 
-  static constexpr void Call(FromVoid* from, void* to, size_t index) { array[index](from, to); }
+  static constexpr void Call(FromVoid* from, void* to, size_t index) {
+    array[index](from, to);
+  }
 };
 
 }  // namespace voe::vtables
