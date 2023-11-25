@@ -578,8 +578,9 @@ struct VisitImpl : public DiscardValueImpl<ValueType, ErrorTypes...> {
    * @exception UB if the object is empty (i.e. neither holds a value nor an error)
    */
   template <
-      typename Visitor, typename = std::enable_if_t<
-                            std::is_invocable_v<Visitor, ValueType> && (... && std::invocable<Visitor, ErrorTypes>)>>
+      typename Visitor,
+      typename = std::enable_if_t<
+          std::is_invocable_v<Visitor, ValueType> && (... && std::is_invocable_v<Visitor, ErrorTypes>)>>
   decltype(auto) Visit(Visitor&& visitor) {
     assert(!Base::IsEmpty() && "Visit() called on an empty object");
     return Base::template VisitArray<Visitor, void>::Call(
