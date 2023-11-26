@@ -352,11 +352,13 @@ struct SetErrorImpl : public GetErrorImpl<ValueType, ErrorTypes...> {
   /**
    * @brief Sets the error with the specified value
    */
-  template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
+  template <
+      typename ErrorType, typename Decayed = std::decay_t<ErrorType>,
+      typename = std::enable_if_t<list::contains<ErrorTypesList, Decayed>>>
   void SetError(ErrorType&& error) & {
     Base::Clear();
-    Base::LogicalIndex() = Base::template LogicalErrorIndex<ErrorType>();
-    new (Base::Data()) ErrorType(std::forward<ErrorType>(error));
+    Base::LogicalIndex() = Base::template LogicalErrorIndex<Decayed>();
+    new (Base::Data()) Decayed(std::forward<ErrorType>(error));
   }
 
   /**
@@ -787,9 +789,9 @@ using VoidOrError = ValueOrError<void, ErrorTypes...>;
  * @param[in] error instance of #ErrorType&&
  * @return an instance of #ValueOrError<void, ErrorType> holding an error
  */
-template <typename ErrorType>
-VoidOrError<ErrorType> MakeError(ErrorType&& error) {
-  VoidOrError<ErrorType> result;
+template <typename ErrorType, typename Decayed = std::decay_t<ErrorType>>
+VoidOrError<Decayed> MakeError(ErrorType&& error) {
+  VoidOrError<Decayed> result;
   result.SetError(std::forward<ErrorType>(error));
   return result;
 }
