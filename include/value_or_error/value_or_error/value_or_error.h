@@ -563,6 +563,15 @@ struct DiscardValueImpl<void, ErrorTypes...> : public DiscardErrorImpl<void, Err
   const auto& DiscardValue() const& noexcept {
     return *this;
   }
+
+  /**
+   * @brief Discards the value from the type
+   * @return an object of type ValueOrError<void, ErrorTypes...> with the same state as this
+   * @note moves out the object
+   */
+  auto DiscardValue() && noexcept {
+    return std::move(*this);
+  }
 };
 
 template <typename ValueType, typename... ErrorTypes>

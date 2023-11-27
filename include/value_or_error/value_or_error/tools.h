@@ -33,7 +33,7 @@ using Union =
     detail::TransferTemplate<detail::list::set::unite<detail::ErrorTypes<VoEOrErrorTypes>...>, ValueOrError, ValueType>;
 
 template <typename VoE, typename... VoEs>
-Union<void, std::decay_t<VoE>, std::decay_t<VoEs>...> firstError(VoE&& voe, VoEs&&... voes) {
+Union<void, std::decay_t<VoE>, std::decay_t<VoEs>...> firstError(VoE& voe, VoEs&... voes) {
   if (voe.HasAnyError()) {
     return std::move(voe).DiscardValue();
   }
@@ -41,7 +41,7 @@ Union<void, std::decay_t<VoE>, std::decay_t<VoEs>...> firstError(VoE&& voe, VoEs
   if constexpr (sizeof...(voes) == 0) {
     return {};
   } else {
-    return firstError(std::forward<VoEs>(voes)...);
+    return firstError(voes...);
   }
 }
 
@@ -56,7 +56,8 @@ InvertResultType<std::decay_t<VoEs>...> invert(std::tuple<VoEs...>&& voes_tpl) n
   using namespace util::list;
   using namespace util::tpl;
 
-  if (auto error = std::apply(firstError<VoEs...>, voes_tpl); error.HasAnyError()) [[unlikely]] {
+  if (auto error = std::apply([](auto&... refs) { return firstError(refs...); }, voes_tpl); error.HasAnyError())
+      [[unlikely]] {
     return std::move(error);
   }
 
@@ -67,7 +68,7 @@ InvertResultType<std::decay_t<VoEs>...> invert(std::tuple<VoEs...>&& voes_tpl) n
   // should have default "empty" state constructor
   ValueVoesTuple voe_tuple{};
 
-  util::constexprFor<size_t{0}, size<Voes>, size_t{1}>([&, source = std::move(voes_tpl)](auto sourceIndex) {
+  util::constexprFor<size_t{0}, size<Voes>, size_t{1}>([&, source = std::move(voes_tpl)](auto sourceIndex) mutable {
     if constexpr (!std::is_same_v<typename get<Voes, sourceIndex>::value_type, void>) {
       constexpr size_t voidCount =
           sourceIndex.value - size<filter<prefix<Voes, sourceIndex.value>, detail::IsNotVoidVoePredicate>>;
