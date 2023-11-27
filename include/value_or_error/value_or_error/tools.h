@@ -70,9 +70,7 @@ InvertResultType<std::decay_t<VoEs>...> invert(std::tuple<VoEs...>&& voes_tpl) n
 
   util::constexprFor<size_t{0}, size<Voes>, size_t{1}>([&, source = std::move(voes_tpl)](auto sourceIndex) mutable {
     if constexpr (!std::is_same_v<typename get<Voes, sourceIndex>::value_type, void>) {
-      constexpr size_t voidCount =
-          sourceIndex.value - size<filter<prefix<Voes, sourceIndex.value>, detail::IsNotVoidVoePredicate>>;
-      constexpr size_t destIndex = sourceIndex - voidCount;
+      constexpr size_t destIndex = size<filter<prefix<Voes, sourceIndex.value>, detail::IsNotVoidVoePredicate>>;
       std::get<destIndex>(voe_tuple) = std::move(std::get<sourceIndex>(source));
     }
   });
