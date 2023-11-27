@@ -1,3 +1,4 @@
+#include "value_or_error/tools.h"
 #include "value_or_error/value_or_error.h"
 
 #include <gtest/gtest.h>
@@ -139,9 +140,13 @@ TEST(ValueConstructorTest, Nothrow) {
   static_assert(!std::is_nothrow_constructible_v<ValueOrError<std::string>, std::string>);
 }
 
-ValueOrError<int, const char*> ReturnValue() { return 42; }
+ValueOrError<int, const char*> ReturnValue() {
+  return 42;
+}
 
-ValueOrError<int, const char*> ReturnError() { return MakeError<const char*>("an error"); }
+ValueOrError<int, const char*> ReturnError() {
+  return MakeError<const char*>("an error");
+}
 
 TEST(GetValueTest, RefQualifiers) {
   {
@@ -159,6 +164,12 @@ TEST(GetValueTest, RefQualifiers) {
         std::is_same_v<decltype(static_cast<const ValueOrError<bool, int>&>(verr).GetError<int>()), const int&>);
     static_assert(std::is_same_v<decltype(ReturnError().GetError<const char*>()), const char*&&>);
   }
+}
+
+TEST(InvertTest, ReturnType) {
+  static_assert(std::is_same_v<
+                ValueOrError<std::tuple<char>, float, int, short>,
+                InvertResultType<ValueOrError<void, int, float>, ValueOrError<char, int, short>>>);
 }
 
 }  // namespace voe::detail

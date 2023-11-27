@@ -37,6 +37,9 @@ using filter = typename impl::Filter<TL, Predicate>::type;
 template <template <typename...> typename Mapper, typename TL>
 using map = typename impl::Map<Mapper, TL>::type;
 
+template <typename TL, size_t Count>
+using prefix = typename impl::Prefix<TL, Count>::type;
+
 namespace set {
 
 template <typename... TLs>

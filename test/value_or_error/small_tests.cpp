@@ -1,3 +1,4 @@
+#include "value_or_error/tools.h"
 #include "value_or_error/value_or_error.h"
 
 #include <gtest/gtest.h>
@@ -136,7 +137,9 @@ TEST(SmallConvertAssignTest, FromError) {
   }
 }
 
-ValueOrError<int, const char*> ReturnValue() { return 42; }
+ValueOrError<int, const char*> ReturnValue() {
+  return 42;
+}
 
 TEST(ValueOrErrorTest, ValueOnReturn) {
   auto val = ReturnValue();
@@ -169,7 +172,9 @@ TEST(ValueOrErrorTest, ReturnEmpty) {
   EXPECT_FALSE(val.HasValue());
 }
 
-ValueOrError<int, const char*> ReturnError() { return MakeError<const char*>("some error"); }
+ValueOrError<int, const char*> ReturnError() {
+  return MakeError<const char*>("some error");
+}
 
 TEST(ValueOrErrorTest, ReturnError) {
   auto val = ReturnError();
@@ -189,7 +194,9 @@ TEST(ValueOrErrorTest, ReturnError) {
   EXPECT_STREQ(cval.GetError<const char*>(), "some error");
 }
 
-ValueOrError<int, bool, const char*> CallReturnError() { return ReturnError(); }
+ValueOrError<int, bool, const char*> CallReturnError() {
+  return ReturnError();
+}
 
 TEST(ValueOrErrorTest, Conversion) {
   auto val = CallReturnError();
@@ -216,7 +223,9 @@ TEST(ValueOrErrorTest, DiscardErrorType) {
   EXPECT_STREQ(val.GetError<const char*>(), "some error");
 }
 
-ValueOrError<int, const char*, bool> ErrorPermutation() { return CallReturnError(); }
+ValueOrError<int, const char*, bool> ErrorPermutation() {
+  return CallReturnError();
+}
 
 TEST(ValueOrErrorTest, ErrorPermutation) {
   auto val = ErrorPermutation();
@@ -226,6 +235,64 @@ TEST(ValueOrErrorTest, ErrorPermutation) {
   EXPECT_FALSE(val.HasValue());
   EXPECT_EQ(val.GetErrorIndex(), 0U);
   EXPECT_STREQ(val.GetError<const char*>(), "some error");
+}
+
+TEST(ValueOrErrorTest, Invert) {
+  {
+    ValueOrError<void, int, float> v1 = {};
+    ValueOrError<char, float, short> v2 = 'a';
+
+    auto inverted = invert(v1, v2);
+    EXPECT_FALSE(inverted.HasAnyError());
+    EXPECT_TRUE(inverted.HasValue());
+    EXPECT_EQ(std::make_tuple('a'), inverted.GetValue());
+  }
+
+  {
+    ValueOrError<int, int, float> v1 = 10;
+    ValueOrError<char, float, short> v2 = 'a';
+    ValueOrError<std::string, float, short> v3 = std::string("Hello");
+
+    auto inverted = invert(v1, v2, v3);
+    EXPECT_FALSE(inverted.HasAnyError());
+    EXPECT_TRUE(inverted.HasValue());
+    EXPECT_EQ(std::make_tuple(10, 'a', std::string("Hello")), inverted.GetValue());
+  }
+
+  {
+    ValueOrError<void, int, float> v1 = voe::MakeError(10);
+    ValueOrError<char, float, short> v2 = 'a';
+
+    auto inverted = invert(v1, v2);
+    EXPECT_TRUE(inverted.HasAnyError());
+    EXPECT_TRUE(inverted.HasError<int>());
+    EXPECT_FALSE(inverted.HasValue());
+    EXPECT_EQ(10, inverted.GetError<int>());
+  }
+
+  {
+    ValueOrError<int, int, float> v1 = 10;
+    ValueOrError<char, float, short> v2 = MakeError(10.f);
+    ValueOrError<std::string, float, short> v3 = std::string("Hello");
+
+    auto inverted = invert(v1, v2, v3);
+    EXPECT_TRUE(inverted.HasAnyError());
+    EXPECT_TRUE(inverted.HasError<float>());
+    EXPECT_FALSE(inverted.HasValue());
+    EXPECT_EQ(10.f, inverted.GetError<float>());
+  }
+
+  {
+    ValueOrError<int, int, float> v1 = 10;
+    ValueOrError<char, float, short> v2 = 'a';
+    ValueOrError<std::string, float, short> v3 = MakeError<short>(8);
+
+    auto inverted = invert(v1, v2, v3);
+    EXPECT_TRUE(inverted.HasAnyError());
+    EXPECT_TRUE(inverted.HasError<short>());
+    EXPECT_FALSE(inverted.HasValue());
+    EXPECT_EQ(8, inverted.GetError<short>());
+  }
 }
 
 }  // namespace voe

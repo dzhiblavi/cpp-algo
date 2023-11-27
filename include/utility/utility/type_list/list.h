@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <tuple>
 #include <type_traits>
 
@@ -63,5 +64,8 @@ struct Powerset;
 
 template <typename T, typename U>
 struct SubsetOf;
+
+template <typename TL, size_t Count>
+struct Prefix;
 
 }  // namespace util::list::impl

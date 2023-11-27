@@ -204,4 +204,18 @@ struct IndexOf<T, list<U, Ts...>> : std::integral_constant<size_t, 1 + IndexOf<T
 template <typename... Ts1, typename... Ts2>
 struct SubsetOf<list<Ts1...>, list<Ts2...>> : public std::bool_constant<(... && contains<list<Ts2...>, Ts1>)> {};
 
+template <size_t Count>
+struct Prefix<list<>, Count> : std::enable_if<(Count == 0), list<>> {};
+
+template <typename... Ts>
+struct Prefix<list<Ts...>, 0> {
+  using type = list<>;
+};
+
+template <typename T, typename... Ts, size_t Count>
+requires(Count > 0)
+struct Prefix<list<T, Ts...>, Count> {
+  using type = push_front<prefix<list<Ts...>, Count - 1>, T>;
+};
+
 }  // namespace util::list::impl

@@ -536,9 +536,9 @@ struct DiscardValueImpl : public DiscardErrorImpl<ValueType, ErrorTypes...> {
    * @return an object of type ValueOrError<void, ErrorTypes...> with the same state as this
    * @exception UB: this object holds a value
    */
-  ValueOrError<void, ErrorTypes...> DiscardValue() const noexcept {
+  ValueOrError<void, ErrorTypes...> DiscardValue() && noexcept {
     assert(!Base::HasValue() && "Discarding ValueType on object holding a value");
-    return ValueOrError<void, ErrorTypes...>(*this);
+    return ValueOrError<void, ErrorTypes...>(std::move(*this));
   }
 };
 
@@ -809,48 +809,5 @@ VoidOrError<ErrorType> MakeError(Args&&... args) {
   result.template EmplaceError<ErrorType>(std::forward<Args>(args)...);
   return result;
 }
-
-/**
- * @brief Combine two ValueOrError types
- *
- * For example, consider the following snippet:
- * @code
- * using A = ValueOrError<char, int, short>;
- * A Foo() { ... }
- *
- * using B = ValueOrError<void, long, int>;
- * B Bar() { ... }
- *
- * using C = Union<float, A, B>;
- * static_assert(std::is_same_v<C, ValueOrError<float, int, short, long>>);
- *
- * C Baz() {
- *   RETURN_IF_ERROR(Foo());
- *   RETURN_IF_ERROR(Bar());
- *   return 10.f;
- * }
- * @endcode
- */
-template <typename ValueType, typename... VoEOrErrorTypes>
-using Union =
-    detail::TransferTemplate<detail::list::set::unite<detail::ErrorTypes<VoEOrErrorTypes>...>, ValueOrError, ValueType>;
-
-#define RETURN_IF_ERROR(expr)    \
-  do {                           \
-    auto&& err = (expr);         \
-    if (err.HasAnyError()) {     \
-      return err.DiscardValue(); \
-    }                            \
-  } while (0)
-
-#define ASSIGN_OR_RETURN_ERROR(var, expr) \
-  do {                                    \
-    auto&& err = (expr);                  \
-    if (err.HasAnyError()) {              \
-      return err.DiscardValue();          \
-    }                                     \
-    assert(!err.IsEmpty());               \
-    var = std::move(err.GetValue());      \
-  } while (0)
 
 }  // namespace voe

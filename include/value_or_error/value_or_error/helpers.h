@@ -98,6 +98,13 @@ struct ReferenceSelector<T&&, OnLvalueReference, OnRvalueReference, Args...> {
   using type = OnRvalueReference<Args...>;
 };
 
+template <typename VoE>
+struct IsNotVoidVoePredicate;
+
+template <typename ValueType, typename... ErrorTypes>
+struct IsNotVoidVoePredicate<ValueOrError<ValueType, ErrorTypes...>>
+    : public std::negation<std::is_same<ValueType, void>> {};
+
 }  // namespace impl
 
 template <typename FromTemplate, template <typename...> class ToTemplate, typename... HeadArgs>
@@ -142,5 +149,11 @@ using ConvertiblePredicate = impl::Convertible<FromVariadic, ToVariadic>;
 
 template <typename FromVariadic, typename ToVariadic>
 static constexpr bool Convertible = ConvertiblePredicate<FromVariadic, ToVariadic>::value;
+
+template <typename ValueType>
+struct IsNotVoidPredicate : public std::negation<std::is_same<ValueType, void>> {};
+
+template <typename VoE>
+using IsNotVoidVoePredicate = impl::IsNotVoidVoePredicate<VoE>;
 
 }  // namespace voe::detail
