@@ -31,9 +31,15 @@ class AdjMatrixGraph
     resize(node_count);
   }
 
-  auto transposedView() noexcept { return Transposed(this); }
-  const SizeType& nodeCount() const noexcept { return node_count_; }
-  const SizeType& edgeCount() const noexcept { return edge_count_; }
+  auto transposedView() noexcept {
+    return Transposed(this);
+  }
+  const SizeType& nodeCount() const noexcept {
+    return node_count_;
+  }
+  const SizeType& edgeCount() const noexcept {
+    return edge_count_;
+  }
 
  private:
   using StorageContainer = std::conditional_t<
@@ -41,8 +47,12 @@ class AdjMatrixGraph
       std::array<std::array<std::optional<EdgePayload>, StorageType::kMaxSize>, StorageType::kMaxSize>,
       std::vector<std::vector<std::optional<EdgePayload>>>>;
 
-  SizeType& nodeCountMutable() noexcept { return node_count_; }
-  SizeType& edgeCountMutable() noexcept { return edge_count_; }
+  SizeType& nodeCountMutable() noexcept {
+    return node_count_;
+  }
+  SizeType& edgeCountMutable() noexcept {
+    return edge_count_;
+  }
 
   auto& get(size_t i, size_t j) noexcept {
     normalize(i, j);

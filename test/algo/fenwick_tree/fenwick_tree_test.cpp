@@ -18,9 +18,17 @@ void TestFWTvsNaive(const std::array<size_t, NDims>& dims) {
       dims, 2 * std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()));
 }
 
-TEST(FenwickTreeTest, Dim1) { TestFWTvsNaive<1>({10000}); }
-TEST(FenwickTreeTest, Dim2) { TestFWTvsNaive<2>({73, 237}); }
-TEST(FenwickTreeTest, Dim3) { TestFWTvsNaive<3>({13, 27, 49}); }
-TEST(FenwickTreeTest, Dim4) { TestFWTvsNaive<4>({9, 13, 21, 17}); }
+TEST(FenwickTreeTest, Dim1) {
+  TestFWTvsNaive<1>({10000});
+}
+TEST(FenwickTreeTest, Dim2) {
+  TestFWTvsNaive<2>({73, 237});
+}
+TEST(FenwickTreeTest, Dim3) {
+  TestFWTvsNaive<3>({13, 27, 49});
+}
+TEST(FenwickTreeTest, Dim4) {
+  TestFWTvsNaive<4>({9, 13, 21, 17});
+}
 
 }  // namespace test::fwt::unit

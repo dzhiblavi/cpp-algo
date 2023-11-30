@@ -21,8 +21,11 @@ constexpr void constexprFor(F&& f, Args&&... args) {
 
 template <typename F, typename TupleLike>
 constexpr void constexprFor(F&& f, TupleLike&& tuple) {
-  constexpr size_t size = std::tuple_size_v<TupleLike>;
-  constexprFor<size_t{0}, size, size_t{1}>([&](auto i) { f(std::get<i.value>(tuple)); });
+  std::apply(
+      [f = std::forward<F>(f)]<typename... Types>(Types&&... values) {
+        constexprFor(std::forward<F>(f), std::forward<Types>(values)...);
+      },
+      std::forward<TupleLike>(tuple));
 }
 
 }  // namespace util

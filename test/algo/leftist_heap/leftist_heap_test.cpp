@@ -10,7 +10,9 @@ namespace test::leftist_heap::unit {
 namespace lheap = ::algo::leftist_heap;
 
 struct IntValue : public lheap::LeftistHeapHook<IntValue> {
-  auto operator<(const IntValue& rhs) const noexcept { return value < rhs.value; }
+  auto operator<(const IntValue& rhs) const noexcept {
+    return value < rhs.value;
+  }
 
   int value;
 };

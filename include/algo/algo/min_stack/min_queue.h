@@ -9,8 +9,12 @@ class MinQueue {
  public:
   MinQueue() noexcept = default;
 
-  void push(const T& value) { push_stack_.push(value); }
-  void push(T&& value) { push_stack_.push(std::move(value)); }
+  void push(const T& value) {
+    push_stack_.push(value);
+  }
+  void push(T&& value) {
+    push_stack_.push(std::move(value));
+  }
 
   template <typename... Args>
   void emplace(Args&&... args) {
@@ -47,8 +51,12 @@ class MinQueue {
     pop_stack_.reserve(capacity);
   }
 
-  [[nodiscard]] size_t size() const noexcept { return push_stack_.size() + pop_stack_.size(); }
-  [[nodiscard]] size_t isEmpty() const noexcept { return size() == 0; }
+  [[nodiscard]] size_t size() const noexcept {
+    return push_stack_.size() + pop_stack_.size();
+  }
+  [[nodiscard]] size_t isEmpty() const noexcept {
+    return size() == 0;
+  }
 
  private:
   void flushPushIfPopIsEmpty() const {

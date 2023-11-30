@@ -37,9 +37,15 @@ class StackElement<T, Compare, ForceContainerStrategy<ContainerHolder, false>> {
   StackElement(const T& value, const T& old_min_value, Compare& comp)
       : value_{value}, min_value_{std::min(value, old_min_value, comp)} {}
 
-  const T& min() const noexcept { return min_value_; }
-  T& value() noexcept { return value_; }
-  const T& value() const noexcept { return value_; }
+  const T& min() const noexcept {
+    return min_value_;
+  }
+  T& value() noexcept {
+    return value_;
+  }
+  const T& value() const noexcept {
+    return value_;
+  }
 
  private:
   T value_;
@@ -56,9 +62,15 @@ class StackElement<T, Compare, ForceContainerStrategy<ContainerHolder, true>> {
   StackElement(const T& value, const T& old_min_value, Compare& comp)
       : value_{value}, min_value_ptr_{comp(value, old_min_value) ? &value_ : &old_min_value} {}
 
-  const T& min() const noexcept { return *min_value_ptr_; }
-  T& value() noexcept { return value_; }
-  const T& value() const noexcept { return value_; }
+  const T& min() const noexcept {
+    return *min_value_ptr_;
+  }
+  T& value() noexcept {
+    return value_;
+  }
+  const T& value() const noexcept {
+    return value_;
+  }
 
  private:
   T value_;
@@ -100,24 +112,42 @@ class MinStack {
     }
   }
 
-  void pop() noexcept { stack_.pop_back(); }
+  void pop() noexcept {
+    stack_.pop_back();
+  }
 
   template <typename... Args>
   void emplace(Args&&... args) {
     push(T{std::forward<Args>(args)...});
   }
 
-  [[nodiscard]] T& top() noexcept { return front().value(); }
-  [[nodiscard]] const T& top() const noexcept { return front().value(); }
-  [[nodiscard]] const T& min() const noexcept { return front().min(); }
+  [[nodiscard]] T& top() noexcept {
+    return front().value();
+  }
+  [[nodiscard]] const T& top() const noexcept {
+    return front().value();
+  }
+  [[nodiscard]] const T& min() const noexcept {
+    return front().min();
+  }
 
-  void reserve(size_t capacity) { stack_.reserve(capacity); }
-  [[nodiscard]] size_t size() const noexcept { return stack_.size(); }
-  [[nodiscard]] bool isEmpty() const noexcept { return size() == 0; }
+  void reserve(size_t capacity) {
+    stack_.reserve(capacity);
+  }
+  [[nodiscard]] size_t size() const noexcept {
+    return stack_.size();
+  }
+  [[nodiscard]] bool isEmpty() const noexcept {
+    return size() == 0;
+  }
 
  private:
-  StackElement& front() noexcept { return stack_.back(); }
-  const StackElement& front() const noexcept { return stack_.back(); }
+  StackElement& front() noexcept {
+    return stack_.back();
+  }
+  const StackElement& front() const noexcept {
+    return stack_.back();
+  }
 
   [[no_unique_address]] Compare comp_;
   ContainerType stack_;

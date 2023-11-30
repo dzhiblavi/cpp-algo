@@ -37,7 +37,9 @@ class AdjListGraph : public ContinuousNodeIndexTag<true>, public DirectTag<Direc
            ranges::views::join;
   }
 
-  void addNodes(size_t count) noexcept { lists_.resize(nodeCount() + count); }
+  void addNodes(size_t count) noexcept {
+    lists_.resize(nodeCount() + count);
+  }
 
   template <typename... Args>
   requires std::is_constructible_v<EdgePayload, Args...>
@@ -74,8 +76,12 @@ class AdjListGraph : public ContinuousNodeIndexTag<true>, public DirectTag<Direc
   //   return *self().get(from, to);
   // }
 
-  [[nodiscard]] size_t nodeCount() const noexcept { return lists_.size(); }
-  [[nodiscard]] size_t edgeCount() const noexcept { return edge_count_; }
+  [[nodiscard]] size_t nodeCount() const noexcept {
+    return lists_.size();
+  }
+  [[nodiscard]] size_t edgeCount() const noexcept {
+    return edge_count_;
+  }
 
   auto transposedView() {
     if constexpr (!Direct) {

@@ -29,7 +29,9 @@ class AhoCorasick {
 
   AhoCorasick() noexcept = default;
 
-  ~AhoCorasick() noexcept { destroy(&root_); }
+  ~AhoCorasick() noexcept {
+    destroy(&root_);
+  }
 
   template <typename It>
   void add_string(It begin, It end) {

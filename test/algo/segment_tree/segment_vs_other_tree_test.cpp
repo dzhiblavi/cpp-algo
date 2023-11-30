@@ -28,14 +28,30 @@ void TestCompareSGTvsFWT(const std::array<size_t, NDims>& dims) {
       dims, 1000000);
 }
 
-TEST(SegmentTreeVsSparseTreeTest, Dims1) { TestCompareSGTvsSPT<1>({1000000}); }
-TEST(SegmentTreeVsSparseTreeTest, Dims2) { TestCompareSGTvsSPT<2>({128, 512}); }
-TEST(SegmentTreeVsSparseTreeTest, Dims3) { TestCompareSGTvsSPT<3>({10, 30, 60}); }
-TEST(SegmentTreeVsSparseTreeTest, Dims4) { TestCompareSGTvsSPT<4>({5, 11, 18, 23}); }
+TEST(SegmentTreeVsSparseTreeTest, Dims1) {
+  TestCompareSGTvsSPT<1>({1000000});
+}
+TEST(SegmentTreeVsSparseTreeTest, Dims2) {
+  TestCompareSGTvsSPT<2>({128, 512});
+}
+TEST(SegmentTreeVsSparseTreeTest, Dims3) {
+  TestCompareSGTvsSPT<3>({10, 30, 60});
+}
+TEST(SegmentTreeVsSparseTreeTest, Dims4) {
+  TestCompareSGTvsSPT<4>({5, 11, 18, 23});
+}
 
-TEST(SegmentTreeVsFenwickTreeTest, Dims1) { TestCompareSGTvsFWT<1>({1000000}); }
-TEST(SegmentTreeVsFenwickTreeTest, Dims2) { TestCompareSGTvsFWT<2>({128, 512}); }
-TEST(SegmentTreeVsFenwickTreeTest, Dims3) { TestCompareSGTvsFWT<3>({10, 30, 60}); }
-TEST(SegmentTreeVsFenwickTreeTest, Dims4) { TestCompareSGTvsFWT<4>({5, 11, 18, 23}); }
+TEST(SegmentTreeVsFenwickTreeTest, Dims1) {
+  TestCompareSGTvsFWT<1>({1000000});
+}
+TEST(SegmentTreeVsFenwickTreeTest, Dims2) {
+  TestCompareSGTvsFWT<2>({128, 512});
+}
+TEST(SegmentTreeVsFenwickTreeTest, Dims3) {
+  TestCompareSGTvsFWT<3>({10, 30, 60});
+}
+TEST(SegmentTreeVsFenwickTreeTest, Dims4) {
+  TestCompareSGTvsFWT<4>({5, 11, 18, 23});
+}
 
 }  // namespace test::sgt::unit

@@ -32,6 +32,8 @@ template <typename ValueType, typename... VoEOrErrorTypes>
 using Union =
     detail::TransferTemplate<detail::list::set::unite<detail::ErrorTypes<VoEOrErrorTypes>...>, ValueOrError, ValueType>;
 
+namespace detail {
+
 template <typename VoE, typename... VoEs>
 Union<void, std::decay_t<VoE>, std::decay_t<VoEs>...> firstError(VoE& voe, VoEs&... voes) {
   if (voe.HasAnyError()) {
@@ -45,18 +47,26 @@ Union<void, std::decay_t<VoE>, std::decay_t<VoEs>...> firstError(VoE& voe, VoEs&
   }
 }
 
+}  // namespace detail
+
 template <typename... VoEs>
 using InvertResultType = Union<
     util::tpl::applyToTemplate<
         std::tuple, util::list::filter<util::list::list<typename VoEs::value_type...>, detail::IsNotVoidPredicate>>,
     VoEs...>;
 
+/**
+ * @brief Convert multiple VoEs into one, i.e. something like
+ *        (VoE<A, E1, E2>, VoE<B, E2, E3>) -> VoE<tuple<A, B>, E1, E2, E3>
+ * @note If any of provided VoEs hold an error, the resulting one will hold the first error (in tuple order)
+ *       And all values will be dropped.
+ */
 template <typename... VoEs>
 InvertResultType<std::decay_t<VoEs>...> invert(std::tuple<VoEs...>&& voes_tpl) noexcept {
   using namespace util::list;
   using namespace util::tpl;
 
-  if (auto error = std::apply([](auto&... refs) { return firstError(refs...); }, voes_tpl); error.HasAnyError())
+  if (auto error = std::apply([](auto&... refs) { return detail::firstError(refs...); }, voes_tpl); error.HasAnyError())
       [[unlikely]] {
     return std::move(error);
   }

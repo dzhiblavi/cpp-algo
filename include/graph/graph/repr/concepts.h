@@ -8,10 +8,10 @@ namespace edge {
 
 template <typename EdgePayload>
 concept Weighted = requires(const EdgePayload& edge) {
-                     typename EdgePayload::WeightType;
-                     requires std::integral<typename EdgePayload::WeightType>;
-                     { edge.weight() } -> std::same_as<typename EdgePayload::WeightType>;
-                   };
+  typename EdgePayload::WeightType;
+  requires std::integral<typename EdgePayload::WeightType>;
+  { edge.weight() } -> std::same_as<typename EdgePayload::WeightType>;
+};
 
 }  // namespace edge
 

@@ -18,7 +18,9 @@ namespace detail {
 
 template <size_t NDims>
 struct QueryHandle {
-  algo::types::Index<NDims>& getIndex() noexcept { return index_; }
+  algo::types::Index<NDims>& getIndex() noexcept {
+    return index_;
+  }
 
  private:
   algo::types::Index<NDims> index_;
@@ -29,7 +31,9 @@ struct QueryHandle {
 
 template <size_t NDims>
 struct RangeQueryHandle {
-  algo::types::Range<NDims>& getRange() noexcept { return range_; }
+  algo::types::Range<NDims>& getRange() noexcept {
+    return range_;
+  }
 
  private:
   algo::types::Range<NDims> range_;
@@ -52,9 +56,13 @@ class NaiveRangeQueryEngine {
     copyView<T, NDims>(source, view_);
   }
 
-  [[nodiscard]] QueryHandle getQueryHandle() const noexcept { return {}; }
+  [[nodiscard]] QueryHandle getQueryHandle() const noexcept {
+    return {};
+  }
 
-  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept { return {}; }
+  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept {
+    return {};
+  }
 
   auto query(RangeQueryHandle& handle) {
     auto& [ql, qr] = handle.getRange();
@@ -62,7 +70,9 @@ class NaiveRangeQueryEngine {
     return query<0>(ql, qr, idxs);
   }
 
-  void update(QueryHandle& handle, const T& value) { view_.at(handle.getIndex()) = value; }
+  void update(QueryHandle& handle, const T& value) {
+    view_.at(handle.getIndex()) = value;
+  }
 
   void updateRange(RangeQueryHandle& handle, const T& value) {
     auto& [ul, ur] = handle.getRange();
@@ -105,30 +115,50 @@ class NaiveRangeQueryEngine {
 
 template <typename T>
 struct MinOp {
-  T operator()(const T& a, const T& b) const noexcept { return std::min(a, b); }
-  T neutral() const noexcept { return std::numeric_limits<T>::max(); }
-  T init() const noexcept { return neutral(); }
+  T operator()(const T& a, const T& b) const noexcept {
+    return std::min(a, b);
+  }
+  T neutral() const noexcept {
+    return std::numeric_limits<T>::max();
+  }
+  T init() const noexcept {
+    return neutral();
+  }
 };
 
 template <typename T>
 struct MaxOp {
-  T operator()(const T& a, const T& b) const noexcept { return std::max(a, b); }
-  T neutral() const noexcept { return std::numeric_limits<T>::min(); }
-  T init() const noexcept { return neutral(); }
+  T operator()(const T& a, const T& b) const noexcept {
+    return std::max(a, b);
+  }
+  T neutral() const noexcept {
+    return std::numeric_limits<T>::min();
+  }
+  T init() const noexcept {
+    return neutral();
+  }
 };
 
 template <typename T>
 struct SumOp : public std::plus<T> {
-  T neutral() const noexcept { return T(0); }
-  T init() const noexcept { return neutral(); }
+  T neutral() const noexcept {
+    return T(0);
+  }
+  T init() const noexcept {
+    return neutral();
+  }
 };
 
 template <typename T>
 struct MinAndCountOp {
   using value = std::pair<T, int>;
 
-  value neutral() const noexcept { return {std::numeric_limits<T>::max(), 1}; }
-  value init() const noexcept { return neutral(); }
+  value neutral() const noexcept {
+    return {std::numeric_limits<T>::max(), 1};
+  }
+  value init() const noexcept {
+    return neutral();
+  }
 
   value operator()(const value& a, const value& b) const noexcept {
     if (a.first < b.first) {
@@ -140,7 +170,9 @@ struct MinAndCountOp {
     }
   }
 
-  value operator()(const value& a, const T& b) const noexcept { return (*this)(a, {b, 1}); }
+  value operator()(const value& a, const T& b) const noexcept {
+    return (*this)(a, {b, 1});
+  }
 };
 
 }  // namespace test::rq_utils

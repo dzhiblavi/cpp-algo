@@ -1,11 +1,11 @@
 #pragma once
 
-#include <cassert>
-#include <vector>
 #include <array>
-#include <utility>
+#include <cassert>
 #include <iostream>
 #include <sstream>
+#include <utility>
+#include <vector>
 
 namespace test {
 
@@ -85,21 +85,44 @@ template <int Index>
 struct RememberLastOp {
   static constexpr int Idx = Index;
 
-  inline RememberLastOp() { OpCollector::Push(Type::Create, Index); }
-  inline ~RememberLastOp() { OpCollector::Push(Type::Destroy, Index); }
-  inline RememberLastOp(RememberLastOp&) { OpCollector::Push(Type::CONSTRUCT_COPY, Index); }
-  inline RememberLastOp(const RememberLastOp&) { OpCollector::Push(Type::CONSTRUCT_COPY_CONST, Index); }
-  inline RememberLastOp(RememberLastOp&&) noexcept { OpCollector::Push(Type::CONSTRUCT_MOVE, Index); }
-  inline RememberLastOp(const RememberLastOp&&) noexcept { OpCollector::Push(Type::CONSTRUCT_MOVE_CONST, Index); }
-  inline void operator=(RememberLastOp&) { OpCollector::Push(Type::ASSIGN_COPY, Index); }
-  inline void operator=(const RememberLastOp&) { OpCollector::Push(Type::ASSIGN_COPY_CONST, Index); }
-  inline void operator=(RememberLastOp&&) noexcept { OpCollector::Push(Type::ASSIGN_MOVE, Index); }
-  inline void operator=(const RememberLastOp&&) noexcept { OpCollector::Push(Type::ASSIGN_MOVE_CONST, Index); }
-  inline constexpr int GetIndex() const noexcept { return Index; }
+  inline RememberLastOp() {
+    OpCollector::Push(Type::Create, Index);
+  }
+  inline ~RememberLastOp() {
+    OpCollector::Push(Type::Destroy, Index);
+  }
+  inline RememberLastOp(RememberLastOp&) {
+    OpCollector::Push(Type::CONSTRUCT_COPY, Index);
+  }
+  inline RememberLastOp(const RememberLastOp&) {
+    OpCollector::Push(Type::CONSTRUCT_COPY_CONST, Index);
+  }
+  inline RememberLastOp(RememberLastOp&&) noexcept {
+    OpCollector::Push(Type::CONSTRUCT_MOVE, Index);
+  }
+  inline RememberLastOp(const RememberLastOp&&) noexcept {
+    OpCollector::Push(Type::CONSTRUCT_MOVE_CONST, Index);
+  }
+  inline void operator=(RememberLastOp&) {
+    OpCollector::Push(Type::ASSIGN_COPY, Index);
+  }
+  inline void operator=(const RememberLastOp&) {
+    OpCollector::Push(Type::ASSIGN_COPY_CONST, Index);
+  }
+  inline void operator=(RememberLastOp&&) noexcept {
+    OpCollector::Push(Type::ASSIGN_MOVE, Index);
+  }
+  inline void operator=(const RememberLastOp&&) noexcept {
+    OpCollector::Push(Type::ASSIGN_MOVE_CONST, Index);
+  }
+  inline constexpr int GetIndex() const noexcept {
+    return Index;
+  }
 };
 
 template <int A, int B>
-inline bool operator==(const RememberLastOp<A>&, const RememberLastOp<B>&) { return A == B; }
+inline bool operator==(const RememberLastOp<A>&, const RememberLastOp<B>&) {
+  return A == B;
+}
 
 }  // namespace test
-

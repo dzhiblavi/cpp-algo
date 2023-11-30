@@ -44,7 +44,9 @@ class AdjMatrixGraph {
            ranges::views::join;
   }
 
-  void addNodes(size_t count) noexcept { self().resize(self().nodeCount() + count); }
+  void addNodes(size_t count) noexcept {
+    self().resize(self().nodeCount() + count);
+  }
 
   template <typename... Args>
   requires std::is_constructible_v<EdgePayload, Args...>
@@ -76,8 +78,12 @@ class AdjMatrixGraph {
   }
 
  private:
-  Self& self() noexcept { return *static_cast<Self*>(this); }
-  const Self& self() const noexcept { return *static_cast<const Self*>(this); }
+  Self& self() noexcept {
+    return *static_cast<Self*>(this);
+  }
+  const Self& self() const noexcept {
+    return *static_cast<const Self*>(this);
+  }
 };
 
 }  // namespace detail

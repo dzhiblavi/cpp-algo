@@ -16,8 +16,12 @@ class value_adapter {
   explicit value_adapter(Args&&... args) noexcept(std::is_nothrow_constructible_v<ValueType, Args...>)
       : value_(std::forward<Args>(args)...) {}
 
-  T& Value() noexcept { return value_; };
-  const T& Value() const noexcept { return value_; };
+  T& Value() noexcept {
+    return value_;
+  };
+  const T& Value() const noexcept {
+    return value_;
+  };
 
  private:
   ValueType value_;
@@ -30,7 +34,9 @@ class size_adapter {
 
   size_adapter() noexcept = default;
 
-  SizeType Size() const noexcept { return size_; }
+  SizeType Size() const noexcept {
+    return size_;
+  }
 
  protected:
   void UpdateAdapter(const SelfT* left, const SelfT* right) noexcept {

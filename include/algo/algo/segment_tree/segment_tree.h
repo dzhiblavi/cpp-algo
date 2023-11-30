@@ -34,7 +34,9 @@ struct Position {
 
 template <size_t NDims>
 struct QueryHandle {
-  types::Index<NDims>& getIndex() noexcept { return index_; }
+  types::Index<NDims>& getIndex() noexcept {
+    return index_;
+  }
 
  private:
   explicit QueryHandle(const types::Index<NDims>& dims) noexcept : position_{dims} {}
@@ -48,7 +50,9 @@ struct QueryHandle {
 
 template <size_t NDims>
 struct RangeQueryHandle {
-  types::Range<NDims>& getRange() noexcept { return range_; }
+  types::Range<NDims>& getRange() noexcept {
+    return range_;
+  }
 
  private:
   explicit RangeQueryHandle(const types::Index<NDims>& dims) noexcept : position_{dims} {}
@@ -70,7 +74,9 @@ class SegmentTree {
   using QueryHandle = detail::QueryHandle<NDims>;
   using RangeQueryHandle = detail::RangeQueryHandle<NDims>;
 
-  explicit SegmentTree(types::Index<NDims>& sizes) { initDims(sizes); }
+  explicit SegmentTree(types::Index<NDims>& sizes) {
+    initDims(sizes);
+  }
 
   explicit SegmentTree(utility::NDView<T, NDims> auto view) {
     view.getDimensions(dims_);
@@ -80,11 +86,17 @@ class SegmentTree {
     build<0>(view, position);
   }
 
-  [[nodiscard]] QueryHandle getQueryHandle() const noexcept { return QueryHandle(dims_); }
+  [[nodiscard]] QueryHandle getQueryHandle() const noexcept {
+    return QueryHandle(dims_);
+  }
 
-  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept { return RangeQueryHandle(dims_); }
+  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept {
+    return RangeQueryHandle(dims_);
+  }
 
-  Node query(RangeQueryHandle& handle) { return query<0>(handle); }
+  Node query(RangeQueryHandle& handle) {
+    return query<0>(handle);
+  }
 
   template <typename F>
   void update(QueryHandle& handle, const F& func) {
@@ -95,7 +107,9 @@ class SegmentTree {
     update<0>(handle, [&value](auto& x) { x = value; });
   }
 
-  void updateRange(RangeQueryHandle& handle, const T& value) { updateRange<0>(handle, value); }
+  void updateRange(RangeQueryHandle& handle, const T& value) {
+    updateRange<0>(handle, value);
+  }
 
  private:
   template <size_t I>
@@ -347,11 +361,19 @@ struct simple_node {
   requires std::constructible_from<T, Args...>
   simple_node(Args&&... args) : value_(std::forward<Args>(args)...) {}
 
-  value_type& value() noexcept { return value_; }
-  const value_type& value() const noexcept { return value_; }
-  operator const value_type&() const noexcept { return value(); }
+  value_type& value() noexcept {
+    return value_;
+  }
+  const value_type& value() const noexcept {
+    return value_;
+  }
+  operator const value_type&() const noexcept {
+    return value();
+  }
 
-  void setValue(const value_type& value) { value_ = value; }
+  void setValue(const value_type& value) {
+    value_ = value;
+  }
 
  private:
   [[no_unique_address]] value_type value_;
@@ -381,16 +403,24 @@ struct simple_node {
 template <typename Node, typename Op>
 struct base_op {
   // At least one of these methods must be defined
-  Node init() { return self().neutral(); }
-  Node neutral() { return self().init(); }
+  Node init() {
+    return self().neutral();
+  }
+  Node neutral() {
+    return self().init();
+  }
 
   // By default simply do nothing
   void push(Node&, Node&, Node&) {}
   void updateRange(Node&, const typename Node::value_type&) {}
 
  private:
-  Op& self() noexcept { return *static_cast<Op*>(this); }
-  const Op& self() const noexcept { return *static_cast<const Op*>(this); }
+  Op& self() noexcept {
+    return *static_cast<Op*>(this);
+  }
+  const Op& self() const noexcept {
+    return *static_cast<const Op*>(this);
+  }
 };
 
 /**
@@ -399,9 +429,15 @@ struct base_op {
  */
 template <typename Node, typename Operation>
 struct simple_op : public base_op<Node, simple_op<Node, Operation>> {
-  Node neutral() const noexcept { return op.neutral(); }
-  Node combine(const Node& left, const Node& right) { return op(left.value(), right.value()); }
-  void updateLeaf(Node& node, const typename Node::value_type& value) { node.setValue(value); }
+  Node neutral() const noexcept {
+    return op.neutral();
+  }
+  Node combine(const Node& left, const Node& right) {
+    return op(left.value(), right.value());
+  }
+  void updateLeaf(Node& node, const typename Node::value_type& value) {
+    node.setValue(value);
+  }
 
  private:
   [[no_unique_address]] Operation op;

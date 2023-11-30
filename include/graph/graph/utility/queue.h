@@ -23,8 +23,12 @@ class Queue {
     return value;
   }
 
-  [[nodiscard]] size_t size() const noexcept { return deque_.size(); }
-  [[nodiscard]] bool empty() const noexcept { return deque_.empty(); }
+  [[nodiscard]] size_t size() const noexcept {
+    return deque_.size();
+  }
+  [[nodiscard]] bool empty() const noexcept {
+    return deque_.empty();
+  }
 
  private:
   std::deque<T> deque_;

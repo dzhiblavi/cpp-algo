@@ -108,7 +108,9 @@ class treap {
  public:
   treap() noexcept = default;
 
-  void insert(Node& node) noexcept { root_ = impl::insert(root_, &node); }
+  void insert(Node& node) noexcept {
+    root_ = impl::insert(root_, &node);
+  }
 
   std::pair<treap<Node>, treap<Node>> split(const typename Node::KeyType& key) && noexcept {
     auto [u, v] = impl::split(root_, key);
@@ -121,9 +123,13 @@ class treap {
     return v;
   }
 
-  Node* find(const typename Node::KeyType& key) noexcept { return impl::find(root_, key); }
+  Node* find(const typename Node::KeyType& key) noexcept {
+    return impl::find(root_, key);
+  }
 
-  Node* root() noexcept { return root_; }
+  Node* root() noexcept {
+    return root_;
+  }
 
  private:
   template <typename Treap>
@@ -141,7 +147,9 @@ class implicit_key_treap {
 
   implicit_key_treap() noexcept = default;
 
-  void push_back(Node& node) noexcept { root_ = impl::merge(root_, &node); }
+  void push_back(Node& node) noexcept {
+    root_ = impl::merge(root_, &node);
+  }
 
   void pop_back() noexcept {
     auto size = root_->Size();
@@ -153,7 +161,9 @@ class implicit_key_treap {
     return {implicit_key_treap<Node>(u), implicit_key_treap<Node>(v)};
   }
 
-  Node* root() noexcept { return root_; }
+  Node* root() noexcept {
+    return root_;
+  }
 
  private:
   template <typename Treap>

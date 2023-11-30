@@ -189,7 +189,9 @@ struct ConstructorsTest : CreateBase {
     (TestConstructFrom(p, ErrorMarker<ErrorTypes1>{}), ...);
   }
 
-  static void Check(test::OpCollector& collector, test::Type, EmptyMarker) { EXPECT_TRUE(collector.Equal()); }
+  static void Check(test::OpCollector& collector, test::Type, EmptyMarker) {
+    EXPECT_TRUE(collector.Equal());
+  }
 
   template <typename T>
   static void Check(test::OpCollector& collector, test::Type type, ValueMarker<T>) {

@@ -135,16 +135,34 @@ TEST(KDTreeTest, radiusSearchSmall2D) {
   radiusSearchTest(std::vector<std::array<int, 2>>{{0, 0}, {1, 0}, {0, 1}, {1, 1}, {-1, 0}, {0, -1}, {-1, -1}});
 }
 
-TEST(KDTreeTest, nnSearchLarge2D) { nnSearchTest<2>(1000); }
-TEST(KDTreeTest, nnSearchLarge3D) { nnSearchTest<3>(1000); }
-TEST(KDTreeTest, nnSearchLarge5D) { nnSearchTest<5>(1000); }
+TEST(KDTreeTest, nnSearchLarge2D) {
+  nnSearchTest<2>(1000);
+}
+TEST(KDTreeTest, nnSearchLarge3D) {
+  nnSearchTest<3>(1000);
+}
+TEST(KDTreeTest, nnSearchLarge5D) {
+  nnSearchTest<5>(1000);
+}
 
-TEST(KDTreeTest, knnSearchLarge2D) { knnSearchTest<2>(1000); }
-TEST(KDTreeTest, knnSearchLarge3D) { knnSearchTest<3>(1000); }
-TEST(KDTreeTest, knnSearchLarge5D) { knnSearchTest<5>(1000); }
+TEST(KDTreeTest, knnSearchLarge2D) {
+  knnSearchTest<2>(1000);
+}
+TEST(KDTreeTest, knnSearchLarge3D) {
+  knnSearchTest<3>(1000);
+}
+TEST(KDTreeTest, knnSearchLarge5D) {
+  knnSearchTest<5>(1000);
+}
 
-TEST(KDTreeTest, radiusSearchLarge2D) { radiusSearchTest<2>(1000); }
-TEST(KDTreeTest, radiusSearchLarge3D) { radiusSearchTest<3>(1000); }
-TEST(KDTreeTest, radiusSearchLarge5D) { radiusSearchTest<5>(1000); }
+TEST(KDTreeTest, radiusSearchLarge2D) {
+  radiusSearchTest<2>(1000);
+}
+TEST(KDTreeTest, radiusSearchLarge3D) {
+  radiusSearchTest<3>(1000);
+}
+TEST(KDTreeTest, radiusSearchLarge5D) {
+  radiusSearchTest<5>(1000);
+}
 
 }  // namespace test::kdtree::unit

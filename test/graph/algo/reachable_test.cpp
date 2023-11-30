@@ -107,7 +107,11 @@ void testReachable() {
   }
 }
 
-TYPED_TEST(ReachableTest, SmallGraphsBfs) { testReachable<TypeParam, true>(); }
-TYPED_TEST(ReachableTest, SmallGraphsDfs) { testReachable<TypeParam, false>(); }
+TYPED_TEST(ReachableTest, SmallGraphsBfs) {
+  testReachable<TypeParam, true>();
+}
+TYPED_TEST(ReachableTest, SmallGraphsDfs) {
+  testReachable<TypeParam, false>();
+}
 
 }  // namespace test::graph::algo::unit

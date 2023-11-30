@@ -17,7 +17,9 @@ class FenwickTree : public types::StatelessEngineBase<NDims> {
   using QueryHandle = typename types::StatelessEngineBase<NDims>::QueryHandle;
   using RangeQueryHandle = typename types::StatelessEngineBase<NDims>::RangeQueryHandle;
 
-  explicit FenwickTree(const types::Index<NDims>& dims) { initDims(dims); }
+  explicit FenwickTree(const types::Index<NDims>& dims) {
+    initDims(dims);
+  }
 
   explicit FenwickTree(utility::NDView<T, NDims> auto view) {
     types::Index<NDims> d;
@@ -26,7 +28,9 @@ class FenwickTree : public types::StatelessEngineBase<NDims> {
     init<0>(view, d);
   }
 
-  void update(QueryHandle& handle, const T& value) { update<0>(handle.getIndex(), 0, value); }
+  void update(QueryHandle& handle, const T& value) {
+    update<0>(handle.getIndex(), 0, value);
+  }
 
   T query(QueryHandle& handle) {
     T result = op_.neutral();
@@ -112,29 +116,47 @@ class FenwickTree : public types::StatelessEngineBase<NDims> {
 
 template <typename T>
 struct MinOp {
-  T neutral() const noexcept { return std::numeric_limits<T>::max(); }
-  T operator()(const T& a, const T& b) const noexcept { return std::min(a, b); }
+  T neutral() const noexcept {
+    return std::numeric_limits<T>::max();
+  }
+  T operator()(const T& a, const T& b) const noexcept {
+    return std::min(a, b);
+  }
 
   /* Set value to x */
-  void update(T& t, const T& x) const noexcept { t = std::min(t, x); }
+  void update(T& t, const T& x) const noexcept {
+    t = std::min(t, x);
+  }
 };
 
 template <typename T>
 struct MaxOp {
-  T neutral() const noexcept { return std::numeric_limits<T>::min(); }
-  T operator()(const T& a, const T& b) const noexcept { return std::max(a, b); }
+  T neutral() const noexcept {
+    return std::numeric_limits<T>::min();
+  }
+  T operator()(const T& a, const T& b) const noexcept {
+    return std::max(a, b);
+  }
 
   /* Set value to x */
-  void update(T& t, const T& x) const noexcept { t = std::max(t, x); }
+  void update(T& t, const T& x) const noexcept {
+    t = std::max(t, x);
+  }
 };
 
 template <typename T>
 struct SumOp : public std::plus<T> {
-  T neutral() const noexcept { return T(0); }
-  T inv(const T& x) { return -x; }
+  T neutral() const noexcept {
+    return T(0);
+  }
+  T inv(const T& x) {
+    return -x;
+  }
 
   /* Increase value by x */
-  void update(T& t, const T& x) const noexcept { t += x; }
+  void update(T& t, const T& x) const noexcept {
+    t += x;
+  }
 };
 
 }  // namespace algo::fwt

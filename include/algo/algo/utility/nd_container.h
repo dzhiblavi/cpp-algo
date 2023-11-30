@@ -43,7 +43,9 @@ class NDContainerView : public NDViewTag<detail::getValueType<Container>, detail
     return atImpl<NI>(*this, indices);
   }
 
-  [[nodiscard]] size_t frontDimension() const noexcept { return container_->size(); }
+  [[nodiscard]] size_t frontDimension() const noexcept {
+    return container_->size();
+  }
 
   template <typename It>
   void getDimensions(It first, It last) const noexcept {
@@ -56,7 +58,9 @@ class NDContainerView : public NDViewTag<detail::getValueType<Container>, detail
     }
   }
 
-  void getDimensions(std::array<size_t, NDims>& dims) const noexcept { getDimensions(dims.begin(), dims.end()); }
+  void getDimensions(std::array<size_t, NDims>& dims) const noexcept {
+    getDimensions(dims.begin(), dims.end());
+  }
 
  private:
   template <size_t IndicesCount>

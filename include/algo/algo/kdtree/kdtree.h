@@ -15,7 +15,9 @@ namespace detail {
 template <typename T, typename Compare = std::less<T>>
 class BoundedPriorityQueue {
  public:
-  explicit BoundedPriorityQueue(size_t max_size) noexcept : max_size_{max_size} { container_.reserve(max_size + 1); }
+  explicit BoundedPriorityQueue(size_t max_size) noexcept : max_size_{max_size} {
+    container_.reserve(max_size + 1);
+  }
 
   template <typename... Args>
   void emplace(Args&&... args) {
@@ -28,10 +30,18 @@ class BoundedPriorityQueue {
     }
   }
 
-  std::vector<T> collect() && { return std::move(container_); }
-  const T& top() { return container_.front(); }
-  [[nodiscard]] size_t size() const noexcept { return container_.size(); }
-  [[nodiscard]] size_t maxSize() const noexcept { return max_size_; }
+  std::vector<T> collect() && {
+    return std::move(container_);
+  }
+  const T& top() {
+    return container_.front();
+  }
+  [[nodiscard]] size_t size() const noexcept {
+    return container_.size();
+  }
+  [[nodiscard]] size_t maxSize() const noexcept {
+    return max_size_;
+  }
 
  private:
   const size_t max_size_;
@@ -205,7 +215,9 @@ class KDTree {
     });
   }
 
-  static size_t nextDimension(size_t dim) noexcept { return dim == Dims - 1 ? 0 : dim + 1; }
+  static size_t nextDimension(size_t dim) noexcept {
+    return dim == Dims - 1 ? 0 : dim + 1;
+  }
 
   static size_t closestDirection(const PointType& query, const PointType& current, size_t dim) noexcept {
     return query[dim] <= current[dim] ? kLeftChild : kRightChild;

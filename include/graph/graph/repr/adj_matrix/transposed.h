@@ -32,19 +32,37 @@ class AdjMatrixGraphTransposedView
 
   explicit AdjMatrixGraphTransposedView(Wrapped* graph) noexcept : graph_{graph} {}
 
-  auto& originalGraph() noexcept { return *graph_; }
-  const SizeType& nodeCount() const noexcept { return graph_->nodeCount(); }
-  const SizeType& edgeCount() const noexcept { return graph_->edgeCount(); }
+  auto& originalGraph() noexcept {
+    return *graph_;
+  }
+  const SizeType& nodeCount() const noexcept {
+    return graph_->nodeCount();
+  }
+  const SizeType& edgeCount() const noexcept {
+    return graph_->edgeCount();
+  }
 
  private:
-  SizeType& nodeCountMutable() noexcept { return graph_->nodeCountMutable(); }
-  SizeType& edgeCountMutable() noexcept { return graph_->edgeCountMutable(); }
+  SizeType& nodeCountMutable() noexcept {
+    return graph_->nodeCountMutable();
+  }
+  SizeType& edgeCountMutable() noexcept {
+    return graph_->edgeCountMutable();
+  }
 
-  auto& get(size_t i, size_t j) noexcept { return graph_->get(j, i); }
-  const auto& get(size_t i, size_t j) const noexcept { return graph_->get(j, i); }
+  auto& get(size_t i, size_t j) noexcept {
+    return graph_->get(j, i);
+  }
+  const auto& get(size_t i, size_t j) const noexcept {
+    return graph_->get(j, i);
+  }
 
-  void resize(size_t capacity) { graph_->resize(capacity); }
-  void reserve(size_t capacity) { graph_->reserve(capacity); }
+  void resize(size_t capacity) {
+    graph_->resize(capacity);
+  }
+  void reserve(size_t capacity) {
+    graph_->reserve(capacity);
+  }
 
   Wrapped* graph_;
 };

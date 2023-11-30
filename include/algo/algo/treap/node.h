@@ -49,22 +49,34 @@ class node_base {
   template <std::invocable<PriorityType()> Generator>
   explicit node_base(Generator& g) noexcept(noexcept(g())) : priority_(g()) {}
 
-  void Update() noexcept(noexcept(Self().UpdateNode())) { Self().UpdateNode(); }
+  void Update() noexcept(noexcept(Self().UpdateNode())) {
+    Self().UpdateNode();
+  }
 
   void UpdateNode() {}
 
-  const KeyType& Key() const noexcept { return Self().Key(); }
+  const KeyType& Key() const noexcept {
+    return Self().Key();
+  }
 
-  const PriorityType& Priority() const noexcept { return priority_; }
+  const PriorityType& Priority() const noexcept {
+    return priority_;
+  }
 
-  const KeyType& KeyLeftToRight(const KeyType& key) const noexcept { return key; }
+  const KeyType& KeyLeftToRight(const KeyType& key) const noexcept {
+    return key;
+  }
 
   NodePtr left = nullptr;
   NodePtr right = nullptr;
 
  private:
-  SelfT& Self() noexcept { return *static_cast<SelfT*>(this); }
-  const SelfT& Self() const noexcept { return *static_cast<const SelfT*>(this); }
+  SelfT& Self() noexcept {
+    return *static_cast<SelfT*>(this);
+  }
+  const SelfT& Self() const noexcept {
+    return *static_cast<const SelfT*>(this);
+  }
 
   PriorityType priority_;
 };
@@ -76,7 +88,9 @@ class value_node : public value_adapter<T>, public node_base<value_node<T>, T> {
 
   using value_adapter<T>::value_adapter;
 
-  const KeyType& Key() const noexcept { return value_adapter<T>::Value(); };
+  const KeyType& Key() const noexcept {
+    return value_adapter<T>::Value();
+  };
 };
 
 template <typename T, typename SizeT = size_t>
@@ -90,11 +104,17 @@ class implicit_key_node
 
   using value_adapter<T>::value_adapter;
 
-  void UpdateNode() { size_adapter<SizeType>::UpdateAdapter(this->left, this->right); }
+  void UpdateNode() {
+    size_adapter<SizeType>::UpdateAdapter(this->left, this->right);
+  }
 
-  KeyType Key() const noexcept { return this->left ? this->left->Size() : 0; }
+  KeyType Key() const noexcept {
+    return this->left ? this->left->Size() : 0;
+  }
 
-  KeyType KeyLeftToRight(const KeyType& key) { return key - Key() - 1; }
+  KeyType KeyLeftToRight(const KeyType& key) {
+    return key - Key() - 1;
+  }
 };
 
 }  // namespace algo::treap

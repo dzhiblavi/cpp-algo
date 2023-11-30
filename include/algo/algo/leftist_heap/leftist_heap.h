@@ -75,23 +75,33 @@ class IntrusiveLeftistHeap {
   /**
    * @brief Removes the minimal element from the heap. Complexity O(log(N)).
    */
-  void extractTop() noexcept { impl::extract<T, S>(root_, comparator_); }
+  void extractTop() noexcept {
+    impl::extract<T, S>(root_, comparator_);
+  }
 
   /**
    * @brief Inserts a new element into the heap. Complexity O(log(N)).
    */
-  void insert(T& value) noexcept { *this = IntrusiveLeftistHeap<T, S>::merge(*this, singleton(value), comparator_); }
+  void insert(T& value) noexcept {
+    *this = IntrusiveLeftistHeap<T, S>::merge(*this, singleton(value), comparator_);
+  }
 
   /**
    * @brief Check whether the heap is empty.
    */
-  [[nodiscard]] bool isEmpty() const noexcept { return root_ == nullptr; }
+  [[nodiscard]] bool isEmpty() const noexcept {
+    return root_ == nullptr;
+  }
 
   /**
    * @brief Get the minimal element of this heap.
    */
-  [[nodiscard]] T& top() noexcept { return *root_; }
-  [[nodiscard]] const T& top() const noexcept { return *root_; }
+  [[nodiscard]] T& top() noexcept {
+    return *root_;
+  }
+  [[nodiscard]] const T& top() const noexcept {
+    return *root_;
+  }
 
   /**
    * @brief Merges two leftist heaps. Complexity O(log(N)).

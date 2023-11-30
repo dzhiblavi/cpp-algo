@@ -4,7 +4,9 @@
 namespace algo::dsu {
 
 struct TreeSizeRankStrategy {
-  static size_t getNewRank(size_t rank_u, size_t rank_v) noexcept { return rank_u + rank_v; }
+  static size_t getNewRank(size_t rank_u, size_t rank_v) noexcept {
+    return rank_u + rank_v;
+  }
 };
 
 struct TreeDepthRankStrategy {

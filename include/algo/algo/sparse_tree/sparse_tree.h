@@ -19,7 +19,9 @@ namespace detail {
 
 template <size_t NDims>
 struct QueryHandle {
-  types::Index<NDims>& getIndex() noexcept { return index_; }
+  types::Index<NDims>& getIndex() noexcept {
+    return index_;
+  }
 
  private:
   types::Index<NDims> index_;
@@ -31,7 +33,9 @@ struct QueryHandle {
 
 template <size_t NDims>
 struct RangeQueryHandle {
-  types::Range<NDims>& getRange() noexcept { return range_; }
+  types::Range<NDims>& getRange() noexcept {
+    return range_;
+  }
 
  private:
   types::Range<NDims> range_;
@@ -64,9 +68,13 @@ class SparseTree {
     build_q<0>(offsets, 0);
   }
 
-  [[nodiscard]] QueryHandle getQueryHandle() const noexcept { return {}; }
+  [[nodiscard]] QueryHandle getQueryHandle() const noexcept {
+    return {};
+  }
 
-  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept { return {}; }
+  [[nodiscard]] RangeQueryHandle getRangeQueryHandle() const noexcept {
+    return {};
+  }
 
   T query(RangeQueryHandle& handle) {
     std::fill(handle.offsets_.begin(), handle.offsets_.end(), 0);
