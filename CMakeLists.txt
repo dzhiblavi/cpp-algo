@@ -12,7 +12,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ".so")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/third_party" ${CMAKE_MODULE_PATH})
-
 set(DLIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(src)
@@ -24,5 +23,6 @@ else()
 endif()
 
 if (STANDALONE)
+  enable_testing()
   add_subdirectory(test)
 endif()

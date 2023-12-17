@@ -190,7 +190,7 @@ SpacesInLineCommentPrefix:
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard:        Auto
-StatementAttributeLikeMacros: ['SDC_ALWAYS_INLINE']
+StatementAttributeLikeMacros: []
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION

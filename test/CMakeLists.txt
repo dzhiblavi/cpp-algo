@@ -1,6 +1,5 @@
 include(gtest)
 include(benchmark)
-enable_testing()
 
 add_subdirectory(src)
 add_subdirectory(algo)
