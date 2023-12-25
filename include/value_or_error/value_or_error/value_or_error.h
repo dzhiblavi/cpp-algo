@@ -6,10 +6,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
-#include <cstdint>
 #include <cstring>
-#include <iostream>
-#include <limits>
 #include <type_traits>
 
 namespace voe {
