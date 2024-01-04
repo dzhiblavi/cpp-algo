@@ -1,5 +1,8 @@
 compile_commands.json
 build/
+cmake-build-*
+lcov.info
+perf.*
 *.sw*
 .cache
 bazel-*

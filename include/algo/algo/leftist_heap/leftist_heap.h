@@ -165,7 +165,7 @@ T* merge(T* x, T* y, Comparator& less_comparator) noexcept {
 }
 
 template <typename T, std::integral SizeType>
-std::pair<T*, T*> extract(T* heap) noexcept {}
+std::pair<T*, T*> extract(T*) noexcept {}
 
 template <typename T, std::integral S, std::invocable<LeftistHeapHook<S>*> UnaryFunction>
 requires std::derived_from<T, LeftistHeapHook<T, S>>

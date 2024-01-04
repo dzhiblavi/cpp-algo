@@ -4,7 +4,9 @@
 #include "utility/templates.h"
 #include "utility/type_list.h"
 
+#include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <limits>
 
 namespace voe {
@@ -120,7 +122,17 @@ template <typename... TypesFrom>
 struct IndexMapping {
   template <typename... TypesTo>
   struct MapTo {
-    static constexpr size_t indices[sizeof...(TypesFrom)] = {list::indexOf<list::list<TypesTo...>, TypesFrom>...};
+    static constexpr size_t size() noexcept {
+      return size_;
+    }
+
+    static constexpr size_t map(size_t index) noexcept {
+      assert(index < size());
+      return indices_[index];
+    }
+
+    static constexpr size_t size_ = sizeof...(TypesFrom);
+    static constexpr size_t indices_[sizeof...(TypesFrom)] = {list::indexOf<list::list<TypesTo...>, TypesFrom>...};
   };
 
   template <typename... TypesTo>
@@ -157,3 +169,11 @@ template <typename VoE>
 using IsNotVoidVoePredicate = impl::IsNotVoidVoePredicate<VoE>;
 
 }  // namespace voe::detail
+
+#define CHECK(cond, msg)                                                          \
+  do {                                                                            \
+    if (!static_cast<bool>(cond)) [[unlikely]] {                                  \
+      std::cerr << "Check failed: " #cond " is not satisfied: " msg << std::endl; \
+      std::terminate();                                                           \
+    }                                                                             \
+  } while (0)

@@ -1,7 +1,9 @@
 function(dlib_add_test EXENAME FIRSTSOURCE)
-    add_executable(unit.${EXENAME} ${FIRSTSOURCE} ${ARGN})
-    target_link_libraries(unit.${EXENAME} PRIVATE dlib::graph dlib::utility test::utility GTest::gtest_main)
-    gtest_discover_tests(unit.${EXENAME})
+  add_executable(unit.${EXENAME} ${FIRSTSOURCE} ${ARGN})
+  target_link_libraries(
+    unit.${EXENAME} PRIVATE dlib::graph dlib::utility test::utility
+                            GTest::gtest_main dlib::options)
+  gtest_discover_tests(unit.${EXENAME})
 endfunction(dlib_add_test)
 
 dlib_add_test(bridges_test algo/bridges_test.cpp)

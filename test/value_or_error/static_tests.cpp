@@ -40,35 +40,35 @@ TEST(VoEUnionTest, Correctness) {
 TEST(IndexMappingTest, Correctness) {
   {
     using M = IndexMapping<>::MapTo<>;
-    static_assert(0 == sizeof(M::indices));
+    static_assert(0 == sizeof(M::indices_));
   }
 
   {
     using M = IndexMapping<int, float, char, std::string>::MapTo<int, float, char, std::string>;
-    static_assert(0 == M::indices[0]);
-    static_assert(1 == M::indices[1]);
-    static_assert(2 == M::indices[2]);
-    static_assert(3 == M::indices[3]);
+    static_assert(0 == M::indices_[0]);
+    static_assert(1 == M::indices_[1]);
+    static_assert(2 == M::indices_[2]);
+    static_assert(3 == M::indices_[3]);
   }
 
   {
     using M = IndexMapping<int, float, char, std::string>::MapTo<float, char, std::string, int>;
-    static_assert(3 == M::indices[0]);
-    static_assert(0 == M::indices[1]);
-    static_assert(1 == M::indices[2]);
-    static_assert(2 == M::indices[3]);
+    static_assert(3 == M::indices_[0]);
+    static_assert(0 == M::indices_[1]);
+    static_assert(1 == M::indices_[2]);
+    static_assert(2 == M::indices_[3]);
   }
 
   {
     using M = IndexMapping<int>::MapTo<ValueTypeWrapper<int>, int>;
-    static_assert(1 == M::indices[0]);
+    static_assert(1 == M::indices_[0]);
   }
 
   {
     using M = IndexMapping<int, float, short>::MapTo<float, char, int>;
-    static_assert(2 == M::indices[0]);
-    static_assert(0 == M::indices[1]);
-    static_assert(size_t(-1) == M::indices[2]);
+    static_assert(2 == M::indices_[0]);
+    static_assert(0 == M::indices_[1]);
+    static_assert(size_t(-1) == M::indices_[2]);
   }
 }
 

@@ -7,14 +7,14 @@
 
 namespace algo::graph::algo {
 
-template <repr::Graph G, bool BFS = false, typename NodeId = typename G::NodeId>
-[[nodiscard]] bool isReachable(const G& graph, NodeId from, NodeId to) {
+template <repr::Graph G, bool BFS = false>
+[[nodiscard]] bool isReachable(const G& graph, typename G::NodeId from, typename G::NodeId to) {
   if (from == to) [[unlikely]] {
     return true;
   }
 
   auto used = repr::mapNodes<bool>(graph);
-  utility::Queue<NodeId, /* FIFO = */ BFS> queue;
+  utility::Queue<typename G::NodeId, /* FIFO = */ BFS> queue;
 
   queue.push(from);
   used[from] = true;

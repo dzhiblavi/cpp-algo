@@ -77,7 +77,7 @@ class FenwickTree : public types::StatelessEngineBase<NDims> {
 
   template <size_t I>
   void update(const types::Index<NDims>& cs, size_t index, const T& value) {
-    for (int64_t i = cs[I]; i < dims_[I]; i = (i | (i + 1))) {
+    for (auto i = cs[I]; i < dims_[I]; i = (i | (i + 1))) {
       if constexpr (I == NDims - 1) {
         op_.update(storage_[index + i], value);
       } else {

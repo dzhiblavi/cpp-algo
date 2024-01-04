@@ -16,9 +16,10 @@ namespace detail {
 template <typename... Types>
 struct VariantStorage {
   static constexpr size_t StorageSize = std::max({0ul, sizeof(Types)...});
+  using IndexType = MinimalSizedIndexType<1 + sizeof...(Types)>;
 
   alignas(Types...) std::byte data[StorageSize];
-  MinimalSizedIndexType<1 + sizeof...(Types)> index{0};
+  IndexType index{0};
 };
 
 template <typename Type>
@@ -28,6 +29,7 @@ template <typename... Stored>
 struct TraitsBase : public VariantStorage<Stored...> {
  public:
   using StorageType = VariantStorage<Stored...>;
+  using IndexType = typename StorageType::IndexType;
 
   using DestructorArray = vtables::DestructorFunctorArray<Stored...>;
 
@@ -52,13 +54,13 @@ struct TraitsBase : public VariantStorage<Stored...> {
   template <typename Ref, typename FromVoid>
   using AssignmentRefSelector = ReferenceSelector<Ref, CopyAssignmentArray, MoveAssignmentArray, FromVoid>;
 
-  const auto& LogicalIndex() const noexcept {
+  const IndexType& LogicalIndex() const noexcept {
     return StorageType::index;
   }
-  auto& LogicalIndex() noexcept {
+  IndexType& LogicalIndex() noexcept {
     return StorageType::index;
   }
-  auto PhysicalIndex() const noexcept {
+  IndexType PhysicalIndex() const noexcept {
     return LogicalToPhysicalIndex(LogicalIndex());
   }
 
@@ -69,13 +71,13 @@ struct TraitsBase : public VariantStorage<Stored...> {
     return StorageType::data;
   }
 
-  static constexpr size_t LogicalEmptyIndex() noexcept {
+  static constexpr IndexType LogicalEmptyIndex() noexcept {
     return 0;
   }
-  static constexpr size_t LogicalToPhysicalIndex(size_t index) noexcept {
+  static constexpr IndexType LogicalToPhysicalIndex(IndexType index) noexcept {
     return index - 1;
   }
-  static constexpr size_t PhysicalToLogicalIndex(size_t index) noexcept {
+  static constexpr IndexType PhysicalToLogicalIndex(IndexType index) noexcept {
     return index + 1;
   }
 
@@ -189,7 +191,7 @@ struct GetValueImpl : public DestructorImpl<ValueType, ErrorTypes...> {
    * @exception UB is HasValue() == false
    */
   ValueType& GetValue() & noexcept {
-    assert(HasValue() && "GetValue() called on object with no value");
+    CHECK(HasValue(), "GetValue() called on object with no value");
     return reinterpret_cast<ValueType&>(Base::Data());
   }
 
@@ -198,7 +200,7 @@ struct GetValueImpl : public DestructorImpl<ValueType, ErrorTypes...> {
    * @exception UB is HasValue() == false
    */
   ValueType&& GetValue() && noexcept {
-    assert(HasValue() && "GetValue() called on object with no value");
+    CHECK(HasValue(), "GetValue() called on object with no value");
     return reinterpret_cast<ValueType&&>(Base::Data());
   }
 
@@ -207,7 +209,7 @@ struct GetValueImpl : public DestructorImpl<ValueType, ErrorTypes...> {
    * @exception UB is HasValue() == false
    */
   const ValueType& GetValue() const& noexcept {
-    assert(HasValue() && "GetValue() called on object with no value");
+    CHECK(HasValue(), "GetValue() called on object with no value");
     return reinterpret_cast<const ValueType&>(Base::Data());
   }
 };
@@ -248,7 +250,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    * @exception UB if !HasAnyError()
    */
   size_t GetErrorIndex() const noexcept {
-    assert(HasAnyError() && "GetErrorIndex() called on object with no error");
+    CHECK(HasAnyError(), "GetErrorIndex() called on object with no error");
     return Base::LogicalIndex() - Base::LogicalFirstErrorIndex();
   }
 
@@ -266,7 +268,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   ErrorType& GetError() & noexcept {
-    assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
+    CHECK(HasError<ErrorType>(), "GetError<E>() called on object with no error E");
     return reinterpret_cast<ErrorType&>(Base::Data());
   }
 
@@ -276,7 +278,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   ErrorType&& GetError() && noexcept {
-    assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
+    CHECK(HasError<ErrorType>(), "GetError<E>() called on object with no error E");
     return reinterpret_cast<ErrorType&&>(Base::Data());
   }
 
@@ -286,7 +288,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   const ErrorType& GetError() const& noexcept {
-    assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
+    CHECK(HasError<ErrorType>(), "GetError<E>() called on object with no error E");
     return reinterpret_cast<const ErrorType&>(Base::Data());
   }
 
@@ -296,7 +298,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <typename ErrorType, typename = std::enable_if_t<list::contains<ErrorTypesList, ErrorType>>>
   const ErrorType&& GetError() const&& noexcept {
-    assert(HasError<ErrorType>() && "GetError<E>() called on object with no error E");
+    CHECK(HasError<ErrorType>(), "GetError<E>() called on object with no error E");
     return reinterpret_cast<const ErrorType&&>(Base::Data());
   }
 
@@ -306,7 +308,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <size_t Index>
   ErrorType<Index>& GetError() & noexcept {
-    assert(HasError<ErrorType<Index>>() && "GetError<I>() called on object with no error E[I]");
+    CHECK(HasError<ErrorType<Index>>(), "GetError<I>() called on object with no error E[I]");
     return reinterpret_cast<ErrorType<Index>&>(Base::Data());
   }
 
@@ -316,7 +318,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <size_t Index>
   ErrorType<Index>&& GetError() && noexcept {
-    assert(HasError<ErrorType<Index>>() && "GetError<I>() called on object with no error E[I]");
+    CHECK(HasError<ErrorType<Index>>(), "GetError<I>() called on object with no error E[I]");
     return reinterpret_cast<ErrorType<Index>&>(Base::Data());
   }
 
@@ -326,7 +328,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <size_t Index>
   const ErrorType<Index>& GetError() const& noexcept {
-    assert(HasError<ErrorType<Index>>() && "GetError<I>() called on object with no error E[I]");
+    CHECK(HasError<ErrorType<Index>>(), "GetError<I>() called on object with no error E[I]");
     return reinterpret_cast<const ErrorType<Index>&>(Base::Data());
   }
 
@@ -336,7 +338,7 @@ struct GetErrorImpl : public GetValueImpl<ValueType, ErrorTypes...> {
    */
   template <size_t Index>
   const ErrorType<Index>&& GetError() const&& noexcept {
-    assert(HasError<ErrorType<Index>>() && "GetError<I>() called on object with no error E[I]");
+    CHECK(HasError<ErrorType<Index>>(), "GetError<I>() called on object with no error E[I]");
     return reinterpret_cast<const ErrorType<Index>&&>(Base::Data());
   }
 };
@@ -409,9 +411,9 @@ struct ConstructorsImpl : public ValueConstructorImpl<ValueType, ErrorTypes...> 
     using PhysicalIndexMapping =
         typename IndexMapping<typename FromType::StoredTypesList>::template MapTo<typename Base::StoredTypesList>;
 
-    const size_t this_phys_index = PhysicalIndexMapping::indices[from.PhysicalIndex()];
-    assert(
-        this_phys_index != size_t(-1) &&
+    const size_t this_phys_index = PhysicalIndexMapping::map(from.PhysicalIndex());
+    CHECK(
+        this_phys_index != size_t(-1),
         "Conversion constructor from ValueOrError<X, ...> to ValueOrError<void, ...>"
         " is trying to drop a value");
 
@@ -462,9 +464,10 @@ struct AssignmentsImpl : public ConstructorsImpl<ValueType, ErrorTypes...> {
         typename IndexMapping<typename RhsType::StoredTypesList>::template MapTo<typename Base::StoredTypesList>;
 
     const size_t rhs_phys_index = rhs.PhysicalIndex();
-    const size_t this_phys_index = PhysicalIndexMapping::indices[rhs_phys_index];
-    assert(
-        this_phys_index != size_t(-1) &&
+    const size_t this_phys_index = PhysicalIndexMapping::map(rhs_phys_index);
+
+    CHECK(
+        this_phys_index != size_t(-1),
         "Conversion assignment of ValueOrError<X, ...> to ValueOrError<void, ...>"
         " is trying to drop a value");
 
@@ -501,17 +504,17 @@ struct DiscardErrorImpl : public AssignmentsImpl<ValueType, ErrorTypes...> {
    */
   template <typename... DiscardedErrors>
   ResultType<DiscardedErrors...> DiscardErrors() {
-    using ResultType = ResultType<DiscardedErrors...>;
-    ResultType result;
+    using ResultT = ResultType<DiscardedErrors...>;
+    ResultT result;
 
     if (Base::IsEmpty()) [[unlikely]] {
       return result;
     }
 
     using PhysicalIndexMapping =
-        typename IndexMapping<typename Base::StoredTypesList>::template MapTo<typename ResultType::StoredTypesList>;
+        typename IndexMapping<typename Base::StoredTypesList>::template MapTo<typename ResultT::StoredTypesList>;
 
-    const size_t result_phys_index = PhysicalIndexMapping::indices[Base::PhysicalIndex()];
+    const size_t result_phys_index = PhysicalIndexMapping::map(Base::PhysicalIndex());
     if (result_phys_index == size_t(-1)) {
       return result;
     }
@@ -519,7 +522,7 @@ struct DiscardErrorImpl : public AssignmentsImpl<ValueType, ErrorTypes...> {
     Base::template MoveConstructorArray<void>::Call(Base::Data(), result.Data(), Base::PhysicalIndex());
     Base::Clear();
 
-    result.LogicalIndex() = ResultType::PhysicalToLogicalIndex(result_phys_index);
+    result.LogicalIndex() = ResultT::PhysicalToLogicalIndex(result_phys_index);
     return result;
   }
 };
@@ -534,7 +537,7 @@ struct DiscardValueImpl : public DiscardErrorImpl<ValueType, ErrorTypes...> {
    * @exception UB: this object holds a value
    */
   ValueOrError<void, ErrorTypes...> DiscardValue() && noexcept {
-    assert(!Base::HasValue() && "Discarding ValueType on object holding a value");
+    CHECK(!Base::HasValue(), "Discarding ValueType on object holding a value");
     return ValueOrError<void, ErrorTypes...>(std::move(*this));
   }
 };
@@ -590,7 +593,7 @@ struct VisitImpl : public DiscardValueImpl<ValueType, ErrorTypes...> {
       typename = std::enable_if_t<
           std::is_invocable_v<Visitor, ValueType> && (... && std::is_invocable_v<Visitor, ErrorTypes>)>>
   decltype(auto) Visit(Visitor&& visitor) {
-    assert(!Base::IsEmpty() && "Visit() called on an empty object");
+    CHECK(!Base::IsEmpty(), "Visit() called on an empty object");
     return Base::template VisitArray<Visitor, void>::Call(
         std::forward<Visitor>(visitor), Base::Data(), Base::PhysicalIndex());
   }
@@ -604,7 +607,7 @@ struct VisitImpl : public DiscardValueImpl<ValueType, ErrorTypes...> {
       typename = std::enable_if_t<
           std::is_invocable_v<Visitor, const ValueType> && (... && std::is_invocable_v<Visitor, const ErrorTypes>)>>
   decltype(auto) Visit(Visitor&& visitor) const {
-    assert(!Base::IsEmpty() && "Visit() called on an empty object");
+    CHECK(!Base::IsEmpty(), "Visit() called on an empty object");
     return Base::template VisitArray<Visitor, const void>::Call(
         std::forward<Visitor>(visitor), Base::Data(), Base::PhysicalIndex());
   }

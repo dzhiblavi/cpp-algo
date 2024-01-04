@@ -10,6 +10,8 @@ namespace test::leftist_heap::unit {
 namespace lheap = ::algo::leftist_heap;
 
 struct IntValue : public lheap::LeftistHeapHook<IntValue> {
+  explicit IntValue(int value) : value(value) {}
+
   auto operator<(const IntValue& rhs) const noexcept {
     return value < rhs.value;
   }
@@ -22,8 +24,8 @@ using Heap = lheap::IntrusiveLeftistHeap<IntValue>;
 TEST(LeftistHeapTest, InsertTwoElements) {
   Heap heap;
 
-  auto x = IntValue{.value = 0};
-  auto y = IntValue{.value = 10};
+  auto x = IntValue(0);
+  auto y = IntValue(10);
 
   heap.insert(x);
   heap.insert(y);
@@ -37,7 +39,7 @@ TEST(LeftistHeapTest, MergeManyElements) {
   Heap heap;
 
   std::array<IntValue, 5> a = {
-      IntValue{.value = 40}, IntValue{.value = 20}, IntValue{.value = 30}, IntValue{.value = 10}, IntValue{.value = 0},
+      IntValue(40), IntValue(20), IntValue(30), IntValue(10), IntValue(0),
   };
 
   for (size_t i = 0; i < a.size(); ++i) {
@@ -52,7 +54,7 @@ TEST(LeftistHeapTest, InsertManyElements) {
   Heap heap;
 
   std::array<IntValue, 5> a = {
-      IntValue{.value = 40}, IntValue{.value = 20}, IntValue{.value = 30}, IntValue{.value = 10}, IntValue{.value = 0},
+      IntValue(40), IntValue(20), IntValue(30), IntValue(10), IntValue(0),
   };
 
   for (size_t i = 0; i < a.size(); ++i) {

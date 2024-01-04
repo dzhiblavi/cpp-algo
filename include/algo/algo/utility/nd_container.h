@@ -3,6 +3,7 @@
 #include "nd_helpers.h"
 
 #include <cassert>
+#include <tuple>
 
 namespace algo::utility {
 
@@ -84,7 +85,7 @@ class NDContainerView : public NDViewTag<detail::getValueType<Container>, detail
       }
     } else {
       return std::apply(
-          [&item](size_t skip, auto... indices) -> AtResultType<IndicesCount> { return asView(item).at(indices...); },
+          [&item](size_t, auto... indices) -> AtResultType<IndicesCount> { return asView(item).at(indices...); },
           indices);
     }
   }

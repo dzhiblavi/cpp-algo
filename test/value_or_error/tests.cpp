@@ -86,7 +86,6 @@ struct ValueConstructorTest {
 struct MakeErrorTest {
   template <typename ValueType, typename... ErrorTypes>
   static void call(ValueOrError<ValueType, ErrorTypes...>* ptr) {
-    using ValueOrError = ValueOrError<ValueType, ErrorTypes...>;
     (TestMakeError(ptr, static_cast<ErrorTypes*>(nullptr)), ...);
   }
 
@@ -170,9 +169,6 @@ struct CreateBase {
 struct ConstructorsTest : CreateBase {
   template <typename ValueType1, typename... ErrorTypes1, typename ValueType2, typename... ErrorTypes2>
   static void call(list::list<ValueOrError<ValueType1, ErrorTypes1...>, ValueOrError<ValueType2, ErrorTypes2...>>* p) {
-    using ValueOrError1 = ValueOrError<ValueType1, ErrorTypes1...>;
-    using ValueOrError2 = ValueOrError<ValueType2, ErrorTypes2...>;
-
     static constexpr bool both_non_void = !std::is_same_v<void, ValueType1> && !std::is_same_v<void, ValueType2>;
 
     // VoE(Empty): No operations expected
@@ -204,8 +200,7 @@ struct ConstructorsTest : CreateBase {
   template <
       typename ValueType1, typename... ErrorTypes1, typename ValueType2, typename... ErrorTypes2, typename ConstructAs>
   static void TestConstructFrom(
-      list::list<ValueOrError<ValueType1, ErrorTypes1...>, ValueOrError<ValueType2, ErrorTypes2...>>* p,
-      ConstructAs as) {
+      list::list<ValueOrError<ValueType1, ErrorTypes1...>, ValueOrError<ValueType2, ErrorTypes2...>>*, ConstructAs as) {
     using ValueOrError1 = ValueOrError<ValueType1, ErrorTypes1...>;
     using ValueOrError2 = ValueOrError<ValueType2, ErrorTypes2...>;
     {
@@ -239,7 +234,7 @@ struct ConstructorsTest : CreateBase {
 
 struct AssignmentsTest : CreateBase {
   template <typename ValueType1, typename... ErrorTypes1, typename ValueType2, typename... ErrorTypes2>
-  static void call(list::list<ValueOrError<ValueType1, ErrorTypes1...>, ValueOrError<ValueType2, ErrorTypes2...>>* p) {
+  static void call(list::list<ValueOrError<ValueType1, ErrorTypes1...>, ValueOrError<ValueType2, ErrorTypes2...>>*) {
     using ValueOrError1 = ValueOrError<ValueType1, ErrorTypes1...>;
     using ValueOrError2 = ValueOrError<ValueType2, ErrorTypes2...>;
     ValueOrError1* p1{nullptr};

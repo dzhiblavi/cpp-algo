@@ -66,9 +66,8 @@ InvertResultType<std::decay_t<VoEs>...> invert(std::tuple<VoEs...>&& voes_tpl) n
   using namespace util::list;
   using namespace util::tpl;
 
-  if (auto error = std::apply([](auto&... refs) { return detail::firstError(refs...); }, voes_tpl); error.HasAnyError())
-      [[unlikely]] {
-    return std::move(error);
+  if (auto error = std::apply(detail::firstError<VoEs...>, voes_tpl); error.HasAnyError()) [[unlikely]] {
+    return error;
   }
 
   using Voes = list<std::decay_t<VoEs>...>;
