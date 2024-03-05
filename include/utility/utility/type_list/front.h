@@ -7,6 +7,8 @@
 
 namespace util::list {
 
+static constexpr size_t npos = size_t(-1);
+
 template <typename Tl>
 static constexpr size_t size = impl::Size<Tl>::value;
 
@@ -14,7 +16,7 @@ template <typename Tl, typename T>
 static constexpr bool contains = impl::Contains<Tl, T>::value;
 
 template <typename Tl, typename T>
-static constexpr size_t indexOf = contains<Tl, T> ? impl::IndexOf<T, Tl>::value : size_t(-1);
+static constexpr size_t indexOf = contains<Tl, T> ? impl::IndexOf<T, Tl>::value : npos;
 
 template <typename Tl, size_t Index>
 using get = std::tuple_element_t<Index, typename Tl::tuple>;

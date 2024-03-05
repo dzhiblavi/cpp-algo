@@ -11,7 +11,7 @@ struct TransferTo;
 template <template <typename...> typename Template, typename TypeList>
 struct ApplyToTemplate;
 
-template <typename T, template <typename> typename Template>
+template <typename T, template <typename...> typename Template>
 struct IsInstanceOfTemplate;
 
 }  // namespace util::tpl::impl

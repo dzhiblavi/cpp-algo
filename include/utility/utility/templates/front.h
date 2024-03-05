@@ -13,7 +13,7 @@ using transferTo = impl::TransferTo<Template>;
 template <template <typename...> typename Template, typename TypeList>
 using applyToTemplate = typename impl::ApplyToTemplate<Template, TypeList>::type;
 
-template <typename T, template <typename> typename Template>
+template <typename T, template <typename...> typename Template>
 [[maybe_unused]] static constexpr bool isInstanceOfTemplate = impl::IsInstanceOfTemplate<T, Template>::value;
 
 }  // namespace util::tpl

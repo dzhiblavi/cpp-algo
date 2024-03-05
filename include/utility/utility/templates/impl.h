@@ -36,10 +36,10 @@ struct ApplyToTemplate<Template, ::util::list::list<Ts...>> {
   using type = Template<Ts...>;
 };
 
-template <typename T, template <typename> typename Template>
+template <typename T, template <typename...> class Template>
 struct IsInstanceOfTemplate : std::false_type {};
 
-template <typename V, template <typename> typename Template>
-struct IsInstanceOfTemplate<Template<V>, Template> : std::true_type {};
+template <typename... V, template <typename...> class Template>
+struct IsInstanceOfTemplate<Template<V...>, Template> : std::true_type {};
 
 }  // namespace util::tpl::impl
