@@ -1,5 +1,5 @@
-include(gtest)
-include(benchmark)
+find_package(gtest REQUIRED)
+find_package(benchmark REQUIRED)
 
 add_subdirectory(src)
 add_subdirectory(algo)

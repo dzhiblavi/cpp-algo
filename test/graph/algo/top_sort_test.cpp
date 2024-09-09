@@ -6,8 +6,6 @@
 #include "test/graph/utility/small_graphs.h"
 
 #include <gtest/gtest.h>
-#include <set>
-#include <vector>
 
 namespace test::graph::algo::unit {
 

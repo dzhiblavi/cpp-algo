@@ -2,7 +2,7 @@ function(dlib_add_test EXENAME FIRSTSOURCE)
   add_executable(unit.${EXENAME} ${FIRSTSOURCE} ${ARGN})
   target_link_libraries(
     unit.${EXENAME} PRIVATE dlib::graph dlib::utility test::utility
-                            GTest::gtest_main dlib::options)
+                            gtest::gtest project_warnings)
   gtest_discover_tests(unit.${EXENAME})
 endfunction(dlib_add_test)
 

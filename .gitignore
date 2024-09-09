@@ -1,5 +1,6 @@
 compile_commands.json
 build/
+target/
 cmake-build-*
 lcov.info
 perf.*

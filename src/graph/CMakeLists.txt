@@ -1,8 +1,8 @@
-include(range-v3)
+find_package(range-v3 REQUIRED)
 
 add_library(dlib-graph INTERFACE)
 add_library(dlib::graph ALIAS dlib-graph)
 
 target_include_directories(dlib-graph INTERFACE $<BUILD_INTERFACE:${DLIB_SOURCE_DIR}/include/graph/>)
 target_include_directories(dlib-graph SYSTEM INTERFACE $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/graph/>)
-target_link_libraries(dlib-graph INTERFACE range-v3)
+target_link_libraries(dlib-graph INTERFACE range-v3::range-v3)

@@ -1,15 +1,17 @@
+include(GoogleTest)
+
 function(dlib_add_test EXENAME FIRSTSOURCE)
   add_executable(unit.${EXENAME} ${FIRSTSOURCE} ${ARGN})
-  target_link_libraries(unit.${EXENAME} PRIVATE dlib::algo test::utility
-                                                GTest::gtest_main dlib::options)
+  target_link_libraries(unit.${EXENAME} PRIVATE project_warnings dlib::algo
+                                                test::utility gtest::gtest)
   gtest_discover_tests(unit.${EXENAME})
 endfunction(dlib_add_test)
 
 function(dlib_add_bench EXENAME FIRSTSOURCE)
   add_executable(bench.${EXENAME} ${FIRSTSOURCE} ${ARGN})
   target_link_libraries(
-    bench.${EXENAME} PRIVATE dlib::algo test::utility benchmark::benchmark
-                             dlib::options)
+    bench.${EXENAME} PRIVATE project_warnings dlib::algo test::utility
+                             benchmark::benchmark)
 endfunction(dlib_add_bench)
 
 dlib_add_test(aho_corasick_test aho_corasick/aho_corasick_test.cpp)

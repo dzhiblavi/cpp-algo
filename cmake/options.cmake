@@ -1,5 +1,5 @@
 add_library(dlib-options INTERFACE)
-add_library(dlib::options ALIAS dlib-options)
+add_library(project_warnings ALIAS dlib-options)
 
 include(compile_flags)
 target_link_libraries(dlib-options INTERFACE compile_flags)
