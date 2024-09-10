@@ -5,6 +5,6 @@ function(dlib_add_test EXENAME FIRSTSOURCE)
   target_link_libraries(unit.${EXENAME} PRIVATE dlib::di test::utility
                                                 gtest::gtest project_warnings)
   gtest_discover_tests(unit.${EXENAME})
-endfunction(add_test)
+endfunction(dlib_add_test)
 
 dlib_add_test(di di_test.cpp)

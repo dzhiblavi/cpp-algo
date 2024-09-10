@@ -3,7 +3,7 @@ function(dlib_add_test EXENAME FIRSTSOURCE)
   target_link_libraries(unit.${EXENAME} PRIVATE dlib::utility test::utility
                                                 gtest::gtest project_warnings)
   gtest_discover_tests(unit.${EXENAME})
-endfunction(add_test)
+endfunction(dlib_add_test)
 
 dlib_add_test(co_resource co_resource/co_resource_test.cpp)
 dlib_add_test(functional functional/func_test.cpp)

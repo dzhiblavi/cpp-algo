@@ -27,8 +27,9 @@ deps-%: _prepare_target-%
 		-s build_type=$*
 
 configure-%: deps-%
-	cd $(call builddir,$*) && $(CMAKE) ../../../               \
+	cd $(call builddir,$*) && $(CMAKE) ../../../             \
 		-G "Unix Makefiles"                                    \
+		-DCMAKE_TOOLCHAIN_FILE="../deps/conan_toolchain.cmake" \
 		-DDLIB_BUILD_TESTS=Yes
 
 build-%: configure-%

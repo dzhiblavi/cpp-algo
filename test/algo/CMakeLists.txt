@@ -24,6 +24,7 @@ dlib_add_test(segment_vs_other_tree_test
               segment_tree/segment_vs_other_tree_test.cpp)
 dlib_add_test(sparse_tree_test sparse_tree/sparse_tree_test.cpp)
 dlib_add_test(treap_test treap/treap_test.cpp)
+dlib_add_test(suffix_array_test suffix_array/suffix_array_test.cpp)
 
 dlib_add_bench(fenwick_tree_benchmark fenwick_tree/fenwick_tree_benchmark.cpp)
 dlib_add_bench(kdtree_benchmark kdtree/kdtree_benchmark.cpp)
