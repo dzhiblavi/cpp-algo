@@ -19,4 +19,3 @@ add_subdirectory(src)
 include(./cmake/Testing.cmake)
 
 # option(DLIB_CODE_COVERAGE "Enable coverage reporting" OFF)
-# include(options) add_subdirectory(src)
