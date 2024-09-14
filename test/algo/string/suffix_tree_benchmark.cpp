@@ -23,17 +23,17 @@ static void BM_suffix_tree_build(::benchmark::State& state) {
 
 BENCHMARK(BM_suffix_tree_build<algo::string::SuffixTree<int>>)
     ->ArgsProduct({
-        ::benchmark::CreateRange(1 << 14, 1 << 18, 2),
+        ::benchmark::CreateRange(1 << 14, 1 << 20, 2),
         //{1, 2, 6, 12, 26},
-        {2},
+        {26},
     })
     ->Complexity();
 
 BENCHMARK(BM_suffix_tree_build<ReferenceSuffixTree>)
     ->ArgsProduct({
-        ::benchmark::CreateRange(1 << 14, 1 << 18, 2),
+        ::benchmark::CreateRange(1 << 14, 1 << 20, 2),
         //{1, 2, 6, 12, 26},
-        {2},
+        {26},
     })
     ->Complexity();
 

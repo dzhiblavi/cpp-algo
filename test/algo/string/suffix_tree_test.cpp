@@ -1,7 +1,5 @@
 #include "algo/string/suffix_tree.h"
 
-#include "test/algo/string/emaxx_suffix_tree.h"
-
 #include <gtest/gtest.h>
 
 namespace test::string::unit {
@@ -13,12 +11,12 @@ namespace {
 
 void collectEdgesImpl(Node* node, const std::string& s, std::vector<std::string>& out) {
     for (size_t i = 0; i < node->edges.size(); ++i) {
-        auto* e = node->edges[i];
-        if (e == nullptr) {
+        auto* v = node->edges[i];
+        if (v == nullptr) {
             continue;
         }
-        out.emplace_back(s.substr(e->p_begin, e->size()));
-        collectEdgesImpl(e->to, s, out);
+        out.emplace_back(s.substr(v->p_edge.p_begin, v->p_edge.size()));
+        collectEdgesImpl(v, s, out);
         out.emplace_back("-");
     }
 }

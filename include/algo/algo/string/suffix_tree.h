@@ -18,32 +18,21 @@ template <typename SizeType = std::size_t>
 struct Edge {
     SizeType p_begin;
     SizeType p_end;
-    Node<SizeType>* to;
 
     [[nodiscard]] SizeType size() const noexcept {
         return p_end - p_begin;
     }
 };
 
-template <typename SizeType = std::size_t>
-struct Parent {
-    Node<SizeType>* ptr;
-    char by_char;
-
-    [[nodiscard]] Edge<SizeType>* edge() const noexcept {
-        assert(ptr != nullptr);
-        return ptr->edge(by_char);
-    }
-};
-
 template <typename SizeType>
 struct Node {
-    std::array<Edge<SizeType>*, kAlphSize> edges = {nullptr};
+    Edge<SizeType> p_edge;
+    std::array<Node*, kAlphSize> edges = {nullptr};
     Node<SizeType>* sufflink;
-    Parent<SizeType> parent;
+    Node<SizeType>* parent;
 
     [[nodiscard]] bool isRoot() noexcept {
-        return parent.ptr == nullptr;
+        return parent == nullptr;
     }
 
     [[nodiscard]] auto*& edge(char c) noexcept {
@@ -59,13 +48,8 @@ struct Pos {
     SizeType pos;
     Node<SizeType>* v;
 
-    Pos(Node<SizeType>* v)
-        : pos(0), v(v) {}
-
-    Pos(Edge<SizeType>* e, SizeType pos)
-        : pos(pos), v(e->to) {
-        assert(e->p_begin < pos && pos < e->p_end);
-    }
+    Pos(Node<SizeType>* v, SizeType pos = 0)
+        : pos(pos), v(v) {}
 
     template <typename... Funcs>
     decltype(auto) visit(Funcs&&... funcs) {
@@ -81,10 +65,10 @@ struct Pos {
                 return call(NodeTag{});
             }
         } else {
-            if constexpr (std::is_invocable_v<CallType, Edge*, SizeType>) {
-                return call(v->parent.edge(), pos);
-            } else if constexpr (std::is_invocable_v<CallType, Edge*>) {
-                return call(v->parent.edge());
+            if constexpr (std::is_invocable_v<CallType, Edge&, Node*, SizeType>) {
+                return call(v->p_edge, v, pos);
+            } else if constexpr (std::is_invocable_v<CallType, Node*, SizeType>) {
+                return call(v, pos);
             } else if constexpr (std::is_invocable_v<CallType, SizeType>) {
                 return call(pos);
             } else if constexpr (std::is_invocable_v<CallType, EdgeTag>) {
@@ -97,8 +81,8 @@ struct Pos {
         return {v};
     }
 
-    static Pos onEdge(Edge<SizeType>* e, SizeType pos) {
-        return {e, pos};
+    static Pos onEdge(Node<SizeType>* to, SizeType pos) {
+        return {to, pos};
     }
 };
 
@@ -111,7 +95,6 @@ protected:
     using Node = Node<SizeType>;
     using Edge = Edge<SizeType>;
     using Pos = Pos<SizeType>;
-    using Parent = Parent<SizeType>;
 
 public:
     explicit SuffixTree(const std::string& s)
@@ -163,11 +146,12 @@ protected:
         assert(hasTransition(pos, c));
         return pos.visit(
             [&](Node* v) {
-                auto* e = v->edge(c);
-                return e->size() == 1 ? Pos::inNode(e->to) : Pos::onEdge(e, e->p_begin + 1);
+                auto* to = v->edge(c);
+                auto& e = to->p_edge;
+                return e.size() == 1 ? Pos::inNode(to) : Pos::onEdge(to, e.p_begin + 1);
             },
-            [&](Edge* e, SizeType i) {
-                return i + 1 == e->p_end ? Pos::inNode(e->to) : Pos::onEdge(e, i + 1);
+            [&](Edge& e, Node* to, SizeType pos) {
+                return pos + 1 == e.p_end ? Pos::inNode(to) : Pos::onEdge(to, pos + 1);
             });
     }
 
@@ -189,13 +173,13 @@ protected:
             return v;
         }
 
-        auto& [p, c] = v->parent;
-        auto* e = p->edge(c);
+        Edge& e = v->p_edge;
+        Node* p = v->parent;
 
         if (p->isRoot()) {
-            return split(transition(p, e->p_begin + 1, e->p_end));
+            return split(transition(p, e.p_begin + 1, e.p_end));
         } else {
-            return split(transition(getSuffLink(p), e->p_begin, e->p_end));
+            return split(transition(getSuffLink(p), e.p_begin, e.p_end));
         }
     }
 
@@ -205,26 +189,27 @@ protected:
 
             pos.visit(
                 [&, c = s[begin]](Node* v) {
-                    auto* e = v->edge(c);
+                    Node* u = v->edge(c);
+                    Edge& e = u->p_edge;
 
-                    if (e->size() == 1) {
+                    if (e.size() == 1) {
                         ++begin;
-                        pos.v = e->to;
-                    } else if (len < e->size()) {
+                        pos.v = u;
+                    } else if (len < e.size()) {
                         begin += len;
-                        pos = Pos::onEdge(e, e->p_begin + len);
+                        pos = Pos::onEdge(u, e.p_begin + len);
                     } else {
-                        begin += e->size();
-                        pos.v = e->to;
+                        begin += e.size();
+                        pos.v = u;
                     }
                 },
-                [&](Edge* e, SizeType i) {
-                    if (i + len < e->size()) {
+                [&](Edge& e, Node* to, SizeType i) {
+                    if (i + len < e.size()) {
                         begin += len;
-                        pos = Pos::onEdge(e, i + len);
+                        pos = Pos::onEdge(to, i + len);
                     } else {
-                        begin += e->size() - i;
-                        pos = Pos::inNode(e->to);
+                        begin += e.size() - i;
+                        pos = Pos::inNode(to);
                     }
                 });
         }
@@ -235,33 +220,21 @@ protected:
     Node* split(Pos pos) {
         return pos.visit(
             [&](Node* v) { return v; },
-            [&](Edge* e, SizeType i) {
-                auto* p = pos.v->parent.ptr;
+            [&](Edge& e, Node* to, SizeType pos) {
+                auto* p = to->parent;
                 auto u = make_node();
-                attach(u, e->to, i, e->p_end);
-                attach(p, u, e->p_begin, i);
+                attach(p, u, e.p_begin, pos);
+                attach(u, to, pos, e.p_end);
                 return u;
             });
     }
 
     void attach(Node* p, Node* u, SizeType begin, SizeType end) {
-        const char c = s[begin];
-
-        u->parent = Parent{
-            .ptr = p,
-            .by_char = c,
-        };
-
-        auto& edge = p->edge(c);
-
-        if (edge == nullptr) {
-            edge = edge_alloc.allocate();
-        }
-
-        *edge = Edge{
+        p->edge(s[begin]) = u;
+        u->parent = p;
+        u->p_edge = Edge{
             .p_begin = begin,
             .p_end = end,
-            .to = u,
         };
     }
 
