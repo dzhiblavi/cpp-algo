@@ -1,0 +1,28 @@
+----------------------------------------------------------------------------------------------------
+Benchmark                                                          Time             CPU   Iterations
+----------------------------------------------------------------------------------------------------
+BM_suffix_tree_build<algo::string::SuffixTree<>>/1/2             615 ns          615 ns      1132723
+BM_suffix_tree_build<algo::string::SuffixTree<>>/4/2             657 ns          659 ns      1070680
+BM_suffix_tree_build<algo::string::SuffixTree<>>/16/2           1134 ns         1133 ns       612520
+BM_suffix_tree_build<algo::string::SuffixTree<>>/64/2           3214 ns         3210 ns       218549
+BM_suffix_tree_build<algo::string::SuffixTree<>>/256/2         11862 ns        11831 ns        59266
+BM_suffix_tree_build<algo::string::SuffixTree<>>/1024/2        51349 ns        51229 ns        13645
+BM_suffix_tree_build<algo::string::SuffixTree<>>/4096/2       288874 ns       288418 ns         2412
+BM_suffix_tree_build<algo::string::SuffixTree<>>/16384/2     1224847 ns      1222591 ns          575
+BM_suffix_tree_build<algo::string::SuffixTree<>>/65536/2     6203165 ns      6147710 ns          155
+BM_suffix_tree_build<algo::string::SuffixTree<>>/262144/2   52941030 ns     51016182 ns           11
+BM_suffix_tree_build<algo::string::SuffixTree<>>_BigO           0.00 N^2        0.00 N^2
+BM_suffix_tree_build<algo::string::SuffixTree<>>_RMS              16 %            17 %
+BM_suffix_tree_build<ReferenceSuffixTree>/1/2                    641 ns          643 ns      1082787
+BM_suffix_tree_build<ReferenceSuffixTree>/4/2                    732 ns          733 ns       956323
+BM_suffix_tree_build<ReferenceSuffixTree>/16/2                   990 ns          992 ns       702191
+BM_suffix_tree_build<ReferenceSuffixTree>/64/2                  2643 ns         2638 ns       257513
+BM_suffix_tree_build<ReferenceSuffixTree>/256/2                 9295 ns         9284 ns        76086
+BM_suffix_tree_build<ReferenceSuffixTree>/1024/2               38020 ns        37972 ns        18384
+BM_suffix_tree_build<ReferenceSuffixTree>/4096/2              152066 ns       151845 ns         4569
+BM_suffix_tree_build<ReferenceSuffixTree>/16384/2             769449 ns       768645 ns          912
+BM_suffix_tree_build<ReferenceSuffixTree>/65536/2            3471560 ns      3455005 ns          201
+BM_suffix_tree_build<ReferenceSuffixTree>/262144/2          22264907 ns     21840344 ns           32
+BM_suffix_tree_build<ReferenceSuffixTree>_BigO                  4.65 NlgN       4.56 NlgN
+BM_suffix_tree_build<ReferenceSuffixTree>_RMS                     17 %            17 %
+
