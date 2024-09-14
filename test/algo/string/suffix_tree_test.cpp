@@ -9,14 +9,15 @@ using SuffixTree = algo::string::SuffixTree<>;
 
 namespace {
 
-void collectEdgesImpl(Node* node, const std::string& s, std::vector<std::string>& out) {
-    for (size_t i = 0; i < node->edges.size(); ++i) {
-        auto* v = node->edges[i];
-        if (v == nullptr) {
+void collectEdgesImpl(Node v, const std::string& s, std::vector<std::string>& out) {
+    for (size_t i = 0; i < algo::string::kAlphSize; ++i) {
+        Node u = v.edge('a' + i);
+        if (u.isNone()) {
             continue;
         }
-        out.emplace_back(s.substr(v->p_edge.p_begin, v->p_edge.size()));
-        collectEdgesImpl(v, s, out);
+        auto& e = u.p_edge_ref();
+        out.emplace_back(s.substr(e.p_begin, e.size()));
+        collectEdgesImpl(u, s, out);
         out.emplace_back("-");
     }
 }

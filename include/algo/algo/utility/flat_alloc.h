@@ -6,25 +6,28 @@
 namespace algo::utility {
 
 template <typename T, typename Allocator = std::allocator<T>>
-class CappedFlatAllocator {
+class FixedCapacityStorage {
 public:
-    explicit CappedFlatAllocator(size_t capacity, Allocator alloc = {})
+    explicit FixedCapacityStorage(size_t capacity, Allocator alloc = {})
         : capacity(capacity), alloc(std::move(alloc)) {
         storage = alloc.allocate(capacity);
     }
 
-    ~CappedFlatAllocator() noexcept {
+    ~FixedCapacityStorage() noexcept {
         alloc.deallocate(storage, capacity);
     }
 
-    // returns a non-owning pointer
     template <typename... Args>
-    T* allocate(Args&&... args) {
+    void emplace_back(Args&&... args) {
         assert(size < capacity);
         T* ptr = static_cast<T*>(storage) + size;
         std::construct_at(ptr, std::forward<Args>(args)...);
-        ++size;
-        return ptr;
+        size++;
+    }
+
+    T* operator*(size_t i) {
+        assert(0 <= i && i < size);
+        return storage + i;
     }
 
 private:

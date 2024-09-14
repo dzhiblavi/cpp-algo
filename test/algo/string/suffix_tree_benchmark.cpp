@@ -9,7 +9,7 @@ namespace test::string::benchmark {
 
 template <typename SuffixTree>
 static void BM_suffix_tree_build(::benchmark::State& state) {
-    // utility::random::resetGenerator();
+     utility::random::resetGenerator();
 
     for (auto _ : state) {
         state.PauseTiming();
@@ -25,7 +25,7 @@ BENCHMARK(BM_suffix_tree_build<algo::string::SuffixTree<int>>)
     ->ArgsProduct({
         ::benchmark::CreateRange(1 << 14, 1 << 20, 2),
         //{1, 2, 6, 12, 26},
-        {6},
+        {26},
     })
     ->Complexity();
 
@@ -33,7 +33,7 @@ BENCHMARK(BM_suffix_tree_build<ReferenceSuffixTree>)
     ->ArgsProduct({
         ::benchmark::CreateRange(1 << 14, 1 << 20, 2),
         //{1, 2, 6, 12, 26},
-        {6},
+        {26},
     })
     ->Complexity();
 
