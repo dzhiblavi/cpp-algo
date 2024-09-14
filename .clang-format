@@ -1,6 +1,6 @@
 Language:        Cpp
 BasedOnStyle:  Google
-AccessModifierOffset: -1
+AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: false
 AlignConsecutiveBitFields: false
@@ -89,7 +89,7 @@ IndentExternBlock: NoIndent
 IndentGotoLabels: true
 IndentPPDirectives: None
 IndentRequires: false
-IndentWidth:     2
+IndentWidth:     4
 IndentWrappedFunctionNames: false
 # InsertBraces: true  clang-format15
 # InsertNewlineAtEOF: false  clang-format16
@@ -111,7 +111,7 @@ ObjCBlockIndentWidth: 2
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
 PPIndentWidth: 2
-# PackConstructorInitializers  clang-format14
+PackConstructorInitializers: NextLineOnly
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 1
 PenaltyBreakComment: 300

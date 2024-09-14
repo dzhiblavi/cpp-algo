@@ -3,7 +3,7 @@
 #include <vector>
 #include <string_view>
 
-namespace algo::sfa {
+namespace algo::string {
 
 std::vector<size_t> buildSuffixArray(std::string_view s);
 

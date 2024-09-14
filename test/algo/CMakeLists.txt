@@ -1,32 +1,36 @@
 include(GoogleTest)
 
-function(dlib_add_test EXENAME FIRSTSOURCE)
-  add_executable(unit.${EXENAME} ${FIRSTSOURCE} ${ARGN})
-  target_link_libraries(unit.${EXENAME} PRIVATE project_warnings dlib::algo
+function(dlib_add_test exename firstsource)
+  add_executable(unit.${exename} ${firstsource} ${ARGN})
+  target_link_libraries(unit.${exename} PRIVATE project_warnings dlib::algo
                                                 test::utility gtest::gtest)
-  gtest_discover_tests(unit.${EXENAME})
+  gtest_discover_tests(unit.${exename})
 endfunction(dlib_add_test)
 
-function(dlib_add_bench EXENAME FIRSTSOURCE)
-  add_executable(bench.${EXENAME} ${FIRSTSOURCE} ${ARGN})
+function(dlib_add_bench exename firstsource)
+  add_executable(bench.${exename} ${firstsource} ${ARGN})
   target_link_libraries(
-    bench.${EXENAME} PRIVATE project_warnings dlib::algo test::utility
+    bench.${exename} PRIVATE project_warnings dlib::algo test::utility
                              benchmark::benchmark)
 endfunction(dlib_add_bench)
 
-dlib_add_test(aho_corasick_test aho_corasick/aho_corasick_test.cpp)
-dlib_add_test(fenwick_tree_test fenwick_tree/fenwick_tree_test.cpp)
-dlib_add_test(kdtree_test kdtree/kdtree_test.cpp)
-dlib_add_test(leftist_heap_test leftist_heap/leftist_heap_test.cpp)
-dlib_add_test(min_stack_test min_stack/min_stack_test.cpp)
-dlib_add_test(segment_tree_test segment_tree/segment_tree_test.cpp)
+dlib_add_test(aho_corasick_test ./aho_corasick/aho_corasick_test.cpp)
+dlib_add_test(fenwick_tree_test ./fenwick_tree/fenwick_tree_test.cpp)
+dlib_add_test(kdtree_test ./kdtree/kdtree_test.cpp)
+dlib_add_test(leftist_heap_test ./leftist_heap/leftist_heap_test.cpp)
+dlib_add_test(min_stack_test ./min_stack/min_stack_test.cpp)
+dlib_add_test(segment_tree_test ./segment_tree/segment_tree_test.cpp)
 dlib_add_test(segment_vs_other_tree_test
-              segment_tree/segment_vs_other_tree_test.cpp)
-dlib_add_test(sparse_tree_test sparse_tree/sparse_tree_test.cpp)
-dlib_add_test(treap_test treap/treap_test.cpp)
-dlib_add_test(suffix_array_test suffix_array/suffix_array_test.cpp)
+              ./segment_tree/segment_vs_other_tree_test.cpp)
+dlib_add_test(sparse_tree_test ./sparse_tree/sparse_tree_test.cpp)
+dlib_add_test(treap_test ./treap/treap_test.cpp)
 
-dlib_add_bench(fenwick_tree_benchmark fenwick_tree/fenwick_tree_benchmark.cpp)
-dlib_add_bench(kdtree_benchmark kdtree/kdtree_benchmark.cpp)
-dlib_add_bench(segment_tree_benchmark segment_tree/segment_tree_benchmark.cpp)
-dlib_add_bench(sparse_tree_benchmark sparse_tree/sparse_tree_benchmark.cpp)
+dlib_add_test(suffix_array_test ./string/suffix_array_test.cpp)
+dlib_add_test(suffix_tree_test ./string/suffix_tree_test.cpp)
+
+dlib_add_bench(fenwick_tree_benchmark ./fenwick_tree/fenwick_tree_benchmark.cpp)
+dlib_add_bench(kdtree_benchmark ./kdtree/kdtree_benchmark.cpp)
+dlib_add_bench(segment_tree_benchmark ./segment_tree/segment_tree_benchmark.cpp)
+dlib_add_bench(sparse_tree_benchmark ./sparse_tree/sparse_tree_benchmark.cpp)
+
+dlib_add_bench(suffix_tree_benchmark ./string/suffix_tree_benchmark.cpp)

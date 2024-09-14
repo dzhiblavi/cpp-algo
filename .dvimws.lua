@@ -2,7 +2,7 @@ local home = os.getenv("HOME")
 local c = require("config.default")
 local p = c.plugins
 
-c.editor.indent = 2
+c.editor.indent = 4
 c.editor.column_limit = 100
 c.features.arc_support = false
 
