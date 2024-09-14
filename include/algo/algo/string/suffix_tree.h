@@ -9,7 +9,7 @@
 
 namespace algo::string {
 
-static constexpr auto kAlphSize = 27;  // a-z + {
+static constexpr auto kAlphSize = 7;  // a-z + {
 
 template <typename SizeType = std::size_t>
 struct Node;
@@ -19,29 +19,26 @@ struct Edge {
     SizeType p_begin;
     SizeType p_end;
 
-    [[nodiscard]] SizeType size() const noexcept {
+    SizeType size() const noexcept {
         return p_end - p_begin;
     }
 };
 
 template <typename SizeType>
 struct Node {
-    Edge<SizeType> p_edge;
     std::array<Node*, kAlphSize> edges = {nullptr};
     Node<SizeType>* sufflink;
     Node<SizeType>* parent;
+    Edge<SizeType> p_edge;
 
-    [[nodiscard]] bool isRoot() noexcept {
+    bool isRoot() noexcept {
         return parent == nullptr;
     }
 
-    [[nodiscard]] auto*& edge(char c) noexcept {
+    auto*& edge(char c) noexcept {
         return edges[c - 'a'];
     }
 };
-
-struct EdgeTag {};
-struct NodeTag {};
 
 template <typename SizeType = std::size_t>
 struct Pos {
@@ -61,8 +58,6 @@ struct Pos {
         if (pos == 0) {
             if constexpr (std::is_invocable_v<CallType, Node*>) {
                 return call(v);
-            } else if constexpr (std::is_invocable_v<CallType, NodeTag>) {
-                return call(NodeTag{});
             }
         } else {
             if constexpr (std::is_invocable_v<CallType, Edge&, Node*, SizeType>) {
@@ -71,8 +66,6 @@ struct Pos {
                 return call(v, pos);
             } else if constexpr (std::is_invocable_v<CallType, SizeType>) {
                 return call(pos);
-            } else if constexpr (std::is_invocable_v<CallType, EdgeTag>) {
-                return call(EdgeTag{});
             }
         }
     }
@@ -88,8 +81,7 @@ struct Pos {
 
 template <
     typename SizeType = std::size_t,  //
-    typename NodeAllocator = std::allocator<Node<SizeType>>,
-    typename EdgeAllocator = std::allocator<Edge<SizeType>>>
+    typename NodeAllocator = std::allocator<Node<SizeType>>>
 class SuffixTree {
 protected:
     using Node = Node<SizeType>;
@@ -98,9 +90,7 @@ protected:
 
 public:
     explicit SuffixTree(const std::string& s)
-        : s(s)
-        , node_alloc(std::max<size_t>(2 * this->s.size() - 1, 2))
-        , edge_alloc(std::max<size_t>(2 * this->s.size() - 1, 2)) {
+        : s(s), node_alloc(std::max<size_t>(2 * this->s.size() - 1, 2)) {
         buildTree();
     }
 
@@ -113,7 +103,7 @@ protected:
         : s(s), node_alloc(std::max<size_t>(2 * this->s.size() - 1, 2)) {}
 
     void buildTree() {
-        Pos curr = root = make_node();
+        Pos curr = root = node_alloc.allocate();
 
         for (SizeType i = 0; i < static_cast<SizeType>(s.size()); ++i) {
             curr = addChar(curr, i);
@@ -127,7 +117,6 @@ protected:
             if (hasTransition(p, c)) {
                 return transition(p, c);
             }
-
             if (p.v == root) {
                 return addLeaf(p, i);
             }
@@ -157,7 +146,7 @@ protected:
 
     Node* addLeaf(Pos pos, SizeType i) {
         auto m = split(pos);
-        attach(m, make_node(), i, s.size());
+        attach(m, node_alloc.allocate(), i, s.size());
         return m;
     }
 
@@ -188,7 +177,8 @@ protected:
             SizeType len = end - begin;
 
             pos.visit(
-                [&, c = s[begin]](Node* v) {
+                [&](Node* v) {
+                    char c = s[begin];
                     Node* u = v->edge(c);
                     Edge& e = u->p_edge;
 
@@ -221,8 +211,8 @@ protected:
         return pos.visit(
             [&](Node* v) { return v; },
             [&](Edge& e, Node* to, SizeType pos) {
-                auto* p = to->parent;
-                auto u = make_node();
+                Node* p = to->parent;
+                Node* u = node_alloc.allocate();
                 attach(p, u, e.p_begin, pos);
                 attach(u, to, pos, e.p_end);
                 return u;
@@ -238,18 +228,9 @@ protected:
         };
     }
 
-    Node* make_node() {
-        return node_alloc.allocate();
-    }
-
-    Edge* make_edge() {
-        return edge_alloc.allocate();
-    }
-
     Node* root;
     std::string_view s;
     utility::CappedFlatAllocator<Node, NodeAllocator> node_alloc;
-    utility::CappedFlatAllocator<Edge, EdgeAllocator> edge_alloc;
 };
 
 }  // namespace algo::string
