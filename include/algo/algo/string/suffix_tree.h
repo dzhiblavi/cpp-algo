@@ -95,8 +95,8 @@ struct NodeSOAStorage {
     }
 
 private:
-    std::vector<int> parent_;
-    std::vector<int> sufflink_;
+    std::vector<SizeType> parent_;
+    std::vector<SizeType> sufflink_;
     std::vector<Edge<SizeType>> p_edge_;
     std::vector<std::array<IndexType, kAlphSize>> edges_;
 };
@@ -188,26 +188,6 @@ protected:
         }
     }
 
-    bool hasTransition(Pos& pos, char c) {
-        return pos.visit(
-            [&](Node& v) { return !v.edge(c).isNone(); },  //
-            [&](SizeType i) { return s[i] == c; });
-    }
-
-    Pos transition(Pos pos, char c) {
-        assert(hasTransition(pos, c));
-        return pos.visit(
-            [&](Node& v) {
-                Node to = v.edge(c);
-                Edge& e = to.p_edge_ref();
-                return e.size() == 1 ? Pos::inNode(to) : Pos::onEdge(to, e.p_begin + 1);
-            },
-            [&](Node& to, SizeType pos) {
-                Edge& e = to.p_edge_ref();
-                return pos + 1 == e.p_end ? Pos::inNode(to) : Pos::onEdge(to, pos + 1);
-            });
-    }
-
     Node addLeaf(Pos pos, SizeType i) {
         auto m = split(pos);
         attach(m, node_storage.create_node(), i, s.size());
@@ -234,6 +214,26 @@ protected:
         } else {
             return split(transition(getSuffLink(p), e.p_begin, e.p_end));
         }
+    }
+
+    bool hasTransition(Pos& pos, char c) {
+        return pos.visit(
+            [&](Node& v) { return !v.edge(c).isNone(); },  //
+            [&](SizeType i) { return s[i] == c; });
+    }
+
+    Pos transition(Pos pos, char c) {
+        assert(hasTransition(pos, c));
+        return pos.visit(
+            [&](Node& v) {
+                Node to = v.edge(c);
+                Edge& e = to.p_edge_ref();
+                return e.size() == 1 ? Pos::inNode(to) : Pos::onEdge(to, e.p_begin + 1);
+            },
+            [&](Node& to, SizeType pos) {
+                Edge& e = to.p_edge_ref();
+                return pos + 1 == e.p_end ? Pos::inNode(to) : Pos::onEdge(to, pos + 1);
+            });
     }
 
     Pos transition(Pos pos, SizeType begin, SizeType end) {

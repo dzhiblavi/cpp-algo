@@ -4,7 +4,17 @@
 
 namespace algo::utility {
 
-SOA(NodeSOA, (int, x), (float, y), (Descriptor, self));
+#define NodeFields (int, x), (float, y), (Descriptor, z)
+
+template <typename SizeType>
+class NodeSOA {
+public:
+    SOA_DESCRIPTOR(NodeSOA, Descriptor, NodeFields);
+    SOA_API(NodeSOA, Descriptor, NodeFields);
+
+private:
+    SOA_STORAGE(NodeSOA, Descriptor, NodeFields);
+};
 
 TEST(A, B) {
     NodeSOA<int> s;
