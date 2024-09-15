@@ -5,6 +5,7 @@
     },
     "include": [
         "target/Debug/deps/CMakePresets.json",
-        "target/Release/deps/CMakePresets.json"
+        "target/Release/deps/CMakePresets.json",
+        "target/RelWithDebInfo/deps/CMakePresets.json"
     ]
 }

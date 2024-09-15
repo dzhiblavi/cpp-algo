@@ -24,14 +24,14 @@ static void BM_suffix_tree_build(::benchmark::State& state) {
 BENCHMARK(BM_suffix_tree_build<algo::string::SuffixTree<int>>)
     ->ArgsProduct({
         ::benchmark::CreateRange(1 << 0, 1 << 20, 2),
-        {8},
+        {4},
     })
     ->Complexity();
 
 BENCHMARK(BM_suffix_tree_build<ReferenceSuffixTree>)
     ->ArgsProduct({
         ::benchmark::CreateRange(1 << 0, 1 << 20, 2),
-        {8},
+        {4},
     })
     ->Complexity();
 

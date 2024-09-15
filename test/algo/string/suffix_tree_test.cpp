@@ -4,27 +4,27 @@
 
 namespace test::string::unit {
 
-using Node = algo::string::Node<>;
 using SuffixTree = algo::string::SuffixTree<>;
 
 namespace {
 
-void collectEdgesImpl(Node v, const std::string& s, std::vector<std::string>& out) {
+void collectEdgesImpl(
+    auto v, SuffixTree& tree, const std::string& s, std::vector<std::string>& out) {
     for (size_t i = 0; i < algo::string::kAlphSize; ++i) {
-        Node u = v.edge('a' + i);
-        if (u.isNone()) {
+        auto u = tree.edge(v, 'a' + i);
+        if (u == SuffixTree::kNull) {
             continue;
         }
-        auto& e = u.p_edge_ref();
+        auto& e = tree.p_edge(u);
         out.emplace_back(s.substr(e.p_begin, e.size()));
-        collectEdgesImpl(u, s, out);
+        collectEdgesImpl(u, tree, s, out);
         out.emplace_back("-");
     }
 }
 
 std::vector<std::string> collectEdges(const std::string& s, SuffixTree& tree) {
     std::vector<std::string> edges;
-    collectEdgesImpl(tree.getRoot(), s, edges);
+    collectEdgesImpl(tree.getRoot(), tree, s, edges);
     return edges;
 }
 

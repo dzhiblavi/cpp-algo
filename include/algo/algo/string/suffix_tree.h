@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cassert>
+#include <ranges>
 #include <string>
 
 namespace algo::string {
@@ -20,112 +21,27 @@ struct Edge {
     }
 };
 
-template <typename SizeType = std::size_t>
-struct NodeSOAStorage {
-    using IndexType = SizeType;
-    static constexpr IndexType kNull = -1;
-    friend struct Descriptor;
-
-    struct Descriptor {
-        friend struct NodeSOAStorage<SizeType>;
-
-        Descriptor() = default;
-        Descriptor(const Descriptor&) = default;
-        Descriptor& operator=(const Descriptor&) = default;
-
-        Descriptor parent() {
-            return {soa, soa->parent_[idx]};
-        }
-
-        void set_parent(const Descriptor& node) {
-            soa->parent_[idx] = node.idx;
-        }
-
-        Descriptor sufflink() {
-            return {soa, soa->sufflink_[idx]};
-        }
-
-        void set_sufflink(const Descriptor& node) {
-            soa->sufflink_[idx] = node.idx;
-        }
-
-        Descriptor edge(char c) {
-            return {soa, soa->edges_[idx][c - 'a']};
-        }
-
-        void set_edge(char c, const Descriptor& node) {
-            soa->edges_[idx][c - 'a'] = node.idx;
-        }
-
-        Edge<SizeType>& p_edge_ref() {
-            return soa->p_edge_[idx];
-        }
-
-        bool isRoot() {
-            return parent().isNone();
-        }
-
-        bool isNone() {
-            return idx == kNull;
-        }
-
-    private:
-        Descriptor(NodeSOAStorage* soa, std::convertible_to<IndexType> auto idx)
-            : soa(soa), idx(static_cast<IndexType>(idx)) {}
-
-        NodeSOAStorage* soa = nullptr;
-        IndexType idx = kNull;
-    };
-
-    explicit NodeSOAStorage(size_t capacity) {
-        parent_.reserve(capacity);
-        sufflink_.reserve(capacity);
-        p_edge_.reserve(capacity);
-        edges_.reserve(capacity);
-    }
-
-    Descriptor create_node() {
-        size_t idx = parent_.size();
-        parent_.push_back(-1);
-        sufflink_.push_back(-1);
-        p_edge_.emplace_back();
-        edges_.emplace_back();
-        edges_.back().fill(-1);
-        return {this, idx};
-    }
-
-private:
-    std::vector<SizeType> parent_;
-    std::vector<SizeType> sufflink_;
-    std::vector<Edge<SizeType>> p_edge_;
-    std::vector<std::array<IndexType, kAlphSize>> edges_;
-};
-
-template <typename SizeType = std::size_t>
-using Node = typename NodeSOAStorage<SizeType>::Descriptor;
-
 struct NodeTag {};
 
 template <typename SizeType = std::size_t>
 struct Pos {
-    Node<SizeType> node;
+    SizeType node;
     SizeType pos;
 
-    Pos(Node<SizeType> v, SizeType pos = 0)
+    Pos(SizeType v, SizeType pos = 0)
         : node(v), pos(pos) {}
 
     template <typename... Funcs>
     decltype(auto) visit(Funcs&&... funcs) {
         auto call = utility::overloaded<Funcs...>{std::forward<Funcs>(funcs)...};
         using CallType = decltype(call);
-        using Node = Node<SizeType>;
 
         if (pos == 0) {
-            if constexpr (std::is_invocable_v<CallType, Node&>) {
-                return call(node);
+            if constexpr (std::is_invocable_v<CallType, NodeTag, SizeType>) {
+                return call(NodeTag{}, node);
             }
         } else {
-            if constexpr (std::is_invocable_v<CallType, Node&, SizeType>) {
+            if constexpr (std::is_invocable_v<CallType, SizeType, SizeType>) {
                 return call(node, pos);
             } else if constexpr (std::is_invocable_v<CallType, SizeType>) {
                 return call(pos);
@@ -133,40 +49,64 @@ struct Pos {
         }
     }
 
-    static Pos inNode(Node<SizeType> v) {
+    static Pos inNode(SizeType v) {
         return {v};
     }
 
-    static Pos onEdge(Node<SizeType> to, SizeType pos) {
+    static Pos onEdge(SizeType to, SizeType pos) {
         return {to, pos};
     }
 };
 
-template <
-    typename SizeType = std::size_t,  //
-    typename NodeAllocator = std::allocator<Node<SizeType>>>
+template <typename SizeType = std::size_t>
 class SuffixTree {
 protected:
-    using Node = Node<SizeType>;
+    using Node = SizeType;
     using Edge = Edge<SizeType>;
     using Pos = Pos<SizeType>;
 
 public:
+    static constexpr SizeType kNull = 0;
+
     explicit SuffixTree(const std::string& s)
-        : s(s), node_storage(std::max<size_t>(2 * this->s.size() - 1, 2)) {
+        : s(s) {
+        reserve(s.size());
         buildTree();
     }
 
-    Node getRoot() {
+    SizeType getRoot() {
         return root;
+    }
+
+    SizeType& parent(Node node) {
+        return parent_[node];
+    }
+
+    SizeType& sufflink(Node node) {
+        return sufflink_[node];
+    }
+
+    Edge& p_edge(Node node) {
+        return p_edge_[node];
+    }
+
+    SizeType& edge(Node node, char c) {
+        return edges_[node * kAlphSize + (c - 'a')];
+    }
+
+    bool isRoot(Node v) {
+        return v == root;
     }
 
 protected:
     SuffixTree(const std::string& s, char)
-        : s(s), node_storage(std::max<size_t>(2 * this->s.size() - 1, 2)) {}
+        : s(s) {
+        reserve(s.size());
+    }
 
     void buildTree() {
-        Pos curr = root = node_storage.create_node();
+        Pos curr = root = makeNode();
+        sufflink(root) = root;
 
         for (SizeType i = 0; i < static_cast<SizeType>(s.size()); ++i) {
             curr = addChar(curr, i);
@@ -180,7 +120,7 @@ protected:
             if (hasTransition(p, c)) {
                 return transition(p, c);
             }
-            if (p.node.isRoot()) {
+            if (isRoot(p.node)) {
                 return addLeaf(p, i);
             }
 
@@ -190,26 +130,22 @@ protected:
 
     Node addLeaf(Pos pos, SizeType i) {
         auto m = split(pos);
-        attach(m, node_storage.create_node(), i, s.size());
+        attach(m, makeNode(), i, s.size());
         return m;
     }
 
     Node getSuffLink(Node v) {
-        if (v.sufflink().isNone()) {
-            v.set_sufflink(resolveSuffLink(v));
+        if (sufflink(v) == kNull) [[unlikely]] {
+            sufflink(v) = resolveSuffLink(v);
         }
-        return v.sufflink();
+        return sufflink(v);
     }
 
     Node resolveSuffLink(Node v) {
-        if (v.isRoot()) {
-            return v;
-        }
+        Edge& e = p_edge(v);
+        Node p = parent(v);
 
-        Edge& e = v.p_edge_ref();
-        Node p = v.parent();
-
-        if (p.isRoot()) {
+        if (isRoot(p)) {
             return split(transition(p, e.p_begin + 1, e.p_end));
         } else {
             return split(transition(getSuffLink(p), e.p_begin, e.p_end));
@@ -218,20 +154,20 @@ protected:
 
     bool hasTransition(Pos& pos, char c) {
         return pos.visit(
-            [&](Node& v) { return !v.edge(c).isNone(); },  //
+            [&](NodeTag, Node v) { return edge(v, c) != kNull; },  //
             [&](SizeType i) { return s[i] == c; });
     }
 
     Pos transition(Pos pos, char c) {
         assert(hasTransition(pos, c));
         return pos.visit(
-            [&](Node& v) {
-                Node to = v.edge(c);
-                Edge& e = to.p_edge_ref();
+            [&](NodeTag, Node v) {
+                Node to = edge(v, c);
+                Edge& e = p_edge(to);
                 return e.size() == 1 ? Pos::inNode(to) : Pos::onEdge(to, e.p_begin + 1);
             },
-            [&](Node& to, SizeType pos) {
-                Edge& e = to.p_edge_ref();
+            [&](Node to, SizeType pos) {
+                Edge& e = p_edge(to);
                 return pos + 1 == e.p_end ? Pos::inNode(to) : Pos::onEdge(to, pos + 1);
             });
     }
@@ -241,10 +177,10 @@ protected:
             SizeType len = end - begin;
 
             pos = pos.visit(
-                [&](Node& v) {
+                [&](NodeTag, Node v) {
                     char c = s[begin];
-                    Node to = v.edge(c);
-                    Edge& e = to.p_edge_ref();
+                    Node to = edge(v, c);
+                    Edge& e = p_edge(to);
 
                     if (e.size() == 1) {
                         ++begin;
@@ -257,8 +193,8 @@ protected:
                         return Pos::inNode(to);
                     }
                 },
-                [&](Node& to, SizeType i) {
-                    Edge& e = to.p_edge_ref();
+                [&](Node to, SizeType i) {
+                    Edge& e = p_edge(to);
 
                     if (i + len < e.size()) {
                         begin += len;
@@ -273,31 +209,63 @@ protected:
         return pos;
     }
 
-    Node split(Pos pos) {
+    SizeType split(Pos pos) {
         return pos.visit(
-            [&](Node& v) { return v; },
-            [&](Node& to, SizeType pos) {
-                Node p = to.parent();
-                Edge& e = to.p_edge_ref();
-                auto u = node_storage.create_node();
+            [&](NodeTag, Node v) { return v; },
+            [&](Node to, SizeType pos) {
+                Node p = parent(to);
+                Edge& e = p_edge(to);
+                auto u = makeNode();
                 attach(p, u, e.p_begin, pos);
                 attach(u, to, pos, e.p_end);
                 return u;
             });
     }
 
-    void attach(Node& p, Node u, SizeType begin, SizeType end) {
-        p.set_edge(s[begin], u);
-        u.set_parent(p);
-        u.p_edge_ref() = Edge{
+    void attach(SizeType p, SizeType u, SizeType begin, SizeType end) {
+        edge(p, s[begin]) = u;
+        parent(u) = p;
+        p_edge(u) = Edge{
             .p_begin = begin,
             .p_end = end,
         };
     }
 
-    Node root;
+    void reserve(size_t size) {
+        size_t max_nodes = 1 + std::max<size_t>(2 * size, 2);
+        size_t buf_size = max_nodes * (4 + kAlphSize);
+        size_t buf_size_bytes = buf_size * sizeof(SizeType);
+
+        phantom_.reset(static_cast<SizeType*>(::operator new(buf_size_bytes)));
+        SizeType* buff = phantom_.get();
+        std::memset(buff, kNull, buf_size_bytes);
+
+        edges_ = buff;
+        buff += kAlphSize * max_nodes;
+
+        p_edge_ = reinterpret_cast<Edge*>(buff);
+        buff += 2 * max_nodes;
+
+        parent_ = buff;
+        buff += max_nodes;
+
+        sufflink_ = buff;
+    }
+
+    Node makeNode() {
+        return size++;
+    }
+
+    SizeType root;
+    SizeType size = 1;
     std::string_view s;
-    NodeSOAStorage<SizeType> node_storage;
+
+    SizeType* edges_;
+    Edge* p_edge_;
+    SizeType* parent_;
+    SizeType* sufflink_;
+
+    std::unique_ptr<SizeType> phantom_;
 };
 
 }  // namespace algo::string

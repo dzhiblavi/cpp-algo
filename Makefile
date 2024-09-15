@@ -38,3 +38,12 @@ build-%: configure-%
 
 test: build-Debug
 	cd $(call builddir,Debug) && ctest --output-on-failure
+
+mac-perf-collect: build-RelWithDebInfo
+	xcrun xctrace record \
+		--template 'CPU Profiler' \
+		--no-prompt \
+		--output suffix-2.trace \
+		--target-stdout - \
+		--launch -- \
+		./target/RelWithDebInfo/build/test/algo/bench.suffix_tree_benchmark
