@@ -5,5 +5,6 @@ function(dlib_add_test EXENAME FIRSTSOURCE)
   gtest_discover_tests(unit.${EXENAME})
 endfunction(dlib_add_test)
 
-dlib_add_test(co_resource co_resource/co_resource_test.cpp)
-dlib_add_test(functional functional/func_test.cpp)
+dlib_add_test(co_resource ./co_resource/co_resource_test.cpp)
+dlib_add_test(functional ./functional/func_test.cpp)
+dlib_add_test(soa_storage ./soa_storage_test.cpp)
