@@ -1,0 +1,35 @@
+buildType:
+  default: Debug
+  choices:
+    Debug:
+      short: Debug
+      long: Emit debug information
+      buildType: Debug
+      settings:
+        UBSAN: ON
+        ASAN: ""
+        TSAN: ""
+    DebugASan:
+      short: DebugASan
+      long: Instrument with Address Sanitizer
+      buildType: Debug
+      settings:
+        UBSAN: ""
+        ASAN: ON
+        TSAN: ""
+    DebugTSan:
+      short: DebugASan
+      long: Instrument with Address Sanitizer
+      buildType: Debug
+      settings:
+        UBSAN: ""
+        ASAN: ""
+        TSAN: ON
+    Release:
+      short: Release
+      long: Optimize generated code
+      buildType: Release
+      settings:
+        UBSAN: ""
+        ASAN: ""
+        TSAN: ""

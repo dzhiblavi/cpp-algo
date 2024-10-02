@@ -3,14 +3,13 @@ find_package(Gperftools)
 
 function(dlib_add_test exename firstsource)
   add_executable(unit.${exename} ${firstsource} ${ARGN})
-  target_link_libraries(unit.${exename} PRIVATE project_warnings test::utility
-                                                gtest::gtest)
+  target_link_libraries(unit.${exename} PRIVATE test::utility gtest::gtest)
   gtest_discover_tests(unit.${exename})
 endfunction(dlib_add_test)
 
 function(dlib_add_bench exename firstsource)
   add_executable(bench.${exename} ${firstsource} ${ARGN})
-  target_link_libraries(bench.${exename} PRIVATE project_warnings test::utility
+  target_link_libraries(bench.${exename} PRIVATE test::utility
                                                  benchmark::benchmark)
 endfunction(dlib_add_bench)
 

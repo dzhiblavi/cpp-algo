@@ -10,7 +10,7 @@ struct VTable {
   vtable_boilerplate;
   vtable_mutable_method(int, run, int);
   vtable_mutable_method(int, does, std::string, float);
-  vtable_declare_thunks(destroyThunk, runThunk, doesThunk);
+  vtable_declare_thunks(destroyThunk, runThunk, doesThunk)
 };
 
 struct Wptr {
